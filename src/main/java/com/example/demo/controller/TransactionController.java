@@ -6,6 +6,8 @@
 
 package com.example.demo.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,8 +39,11 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionController.class);
+
     @RequestMapping(value = "/transaction", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addTransaction(@RequestBody String entity) {
+        LOGGER.info("------addTransaction START--------------");
         try {
             transactionService.addTransaction(entity);
         } catch (ApiValidateException e) {
@@ -47,35 +52,41 @@ public class TransactionController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------addTransaction END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transaction" })), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/transaction/list/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<ResultBean> getListTransaction(@PathVariable Integer userId) {
+    @RequestMapping(value = "/transaction/list", method = RequestMethod.GET)
+    public ResponseEntity<ResultBean> getListTransaction() {
+        LOGGER.info("------getListTransaction START--------------");
         ResultBean entity = null;
         try {
-            entity = transactionService.getListTransaction(userId);
+            entity = transactionService.getListTransaction();
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(entity, HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------getListTransaction END--------------");
         return new ResponseEntity<ResultBean>(entity, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/transaction/list/{userId}/{bankId}", method = RequestMethod.GET)
-    public ResponseEntity<ResultBean> getListTransaction(@PathVariable Integer userId, @PathVariable Integer bankId) {
+    @RequestMapping(value = "/transaction/list/{bankId}", method = RequestMethod.GET)
+    public ResponseEntity<ResultBean> getListTransaction(@PathVariable Integer bankId) {
+        LOGGER.info("------getListTransaction START--------------");
         ResultBean entity = null;
         try {
-            entity = transactionService.getListTransaction(userId, bankId);
+            entity = transactionService.getListTransaction(bankId);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(entity, HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------getListTransaction END--------------");
         return new ResponseEntity<ResultBean>(entity, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/transaction/deposit", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> depositTransaction(@RequestBody String entity) {
+        LOGGER.info("------depositTransaction START--------------");
         try {
             transactionService.deposit(entity);
         } catch (ApiValidateException e) {
@@ -84,11 +95,13 @@ public class TransactionController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------depositTransaction END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transactions" })), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/transaction/withdraw", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> withdrawTransaction(@RequestBody String entity) {
+        LOGGER.info("------withdrawTransaction START--------------");
         try {
             transactionService.withdraw(entity);
         } catch (ApiValidateException e) {
@@ -97,11 +110,13 @@ public class TransactionController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------withdrawTransaction END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transactions" })), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/transaction/transfer", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> transferTransaction(@RequestBody String entity) {
+        LOGGER.info("------transferTransaction START--------------");
         try {
             transactionService.transfer(entity);
         } catch (ApiValidateException e) {
@@ -110,6 +125,7 @@ public class TransactionController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------transferTransaction END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transactions" })), HttpStatus.OK);
     }
 

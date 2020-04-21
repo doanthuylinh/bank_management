@@ -6,8 +6,9 @@
 
 package com.example.demo.service;
 
+import java.util.Map;
+
 import com.example.demo.bean.ResultBean;
-import com.example.demo.bean.UserEntity;
 import com.example.demo.utils.ApiValidateException;
 
 /**
@@ -33,20 +34,20 @@ public interface UserService {
      * @param entity
      * @throws ApiValidateException
      */
-    public void updateUser(UserEntity entity) throws ApiValidateException;
+    public void updateUser(String entity) throws ApiValidateException;
 
     /**
      * @author: (VNEXT)LinhDT
      * @param id
      * @return
      */
-    public ResultBean getUserById(Integer id);
+    public ResultBean getUserById();
 
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
      * @throws ApiValidateException
      */
-    public void login(String entity) throws ApiValidateException;
+    public Map<String, String> login(String entity) throws ApiValidateException;
 
 }

@@ -6,6 +6,8 @@
 
 package com.example.demo.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,8 +38,11 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    private static final Logger LOGGER = LogManager.getLogger(AccountController.class);
+
     @RequestMapping(value = "/account", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addAccount(@RequestBody String entity) {
+        LOGGER.info("------addAccount START--------------");
         try {
             accountService.addAccount(entity);
         } catch (ApiValidateException e) {
@@ -46,11 +51,13 @@ public class AccountController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------addAccount END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", "Insert successfully"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
     public ResponseEntity<ResultBean> getAccount(@PathVariable Integer id) {
+        LOGGER.info("------getAccount START--------------");
         ResultBean entity = null;
         try {
             entity = accountService.getAccountById(id);
@@ -58,6 +65,7 @@ public class AccountController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(entity, HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------getAccount END--------------");
         return new ResponseEntity<ResultBean>(entity, HttpStatus.OK);
     }
 }

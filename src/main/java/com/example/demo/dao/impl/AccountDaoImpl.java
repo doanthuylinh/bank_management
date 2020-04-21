@@ -11,6 +11,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,13 +39,17 @@ public class AccountDaoImpl implements AccountDao {
     @Autowired
     private EntityManager entityManager;
 
+    private static final Logger LOGGER = LogManager.getLogger(AccountDaoImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
      */
     @Override
     public void addAccount(AccountEntity entity) {
+        LOGGER.info("------addAccount START--------------");
         this.entityManager.persist(entity);
+        LOGGER.info("------addAccount END--------------");
     }
 
     /**
@@ -53,6 +59,7 @@ public class AccountDaoImpl implements AccountDao {
      */
     @Override
     public AccountResponse getAccountById(Integer id) {
+        LOGGER.info("------getAccountById START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.AccountResponse(");
         sql.append("    ae.accountId, ");
@@ -82,6 +89,7 @@ public class AccountDaoImpl implements AccountDao {
         } catch (NoResultException e) {
 
         }
+        LOGGER.info("------getAccountById END--------------");
         return entity;
     }
 
@@ -93,6 +101,7 @@ public class AccountDaoImpl implements AccountDao {
      */
     @Override
     public AccountEntity getAccountEntity(Integer userId, Integer bankId) {
+        LOGGER.info("------getAccountEntity START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" FROM ");
         sql.append("    AccountEntity ae ");
@@ -111,6 +120,7 @@ public class AccountDaoImpl implements AccountDao {
         } catch (NoResultException e) {
 
         }
+        LOGGER.info("------getAccountEntity END--------------");
         return entity;
     }
 

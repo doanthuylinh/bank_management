@@ -8,6 +8,8 @@ package com.example.demo.service.impl;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private BankDao bankDao;
 
+    private static final Logger LOGGER = LogManager.getLogger(AccountServiceImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
@@ -55,6 +59,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public void addAccount(String json) throws ApiValidateException {
+        LOGGER.info("------addAccount START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
         // kiem tra user ID duoc nhap dung chua
@@ -103,6 +108,8 @@ public class AccountServiceImpl implements AccountService {
         entity.setBalance(jObject.get("balance").getAsDouble());
 
         accountDao.addAccount(entity);
+
+        LOGGER.info("------addAccount END--------------");
     }
 
     /**
@@ -112,7 +119,9 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public ResultBean getAccountById(Integer id) {
+        LOGGER.info("------getAccountById START--------------");
         AccountResponse entity = accountDao.getAccountById(id);
+        LOGGER.info("------getAccountById END--------------");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "account" }));
     }
 

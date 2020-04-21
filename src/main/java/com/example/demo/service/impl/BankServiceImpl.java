@@ -8,6 +8,8 @@ package com.example.demo.service.impl;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,8 @@ public class BankServiceImpl implements BankService {
     @Autowired
     private BankDao bankDao;
 
+    private static final Logger LOGGER = LogManager.getLogger(BankServiceImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param json
@@ -46,6 +50,7 @@ public class BankServiceImpl implements BankService {
      */
     @Override
     public void addBank(String json) throws ApiValidateException {
+        LOGGER.info("------addBank START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         //get bank by name duoc nhap vao
         String name = jObject.get("bank_name").getAsString();
@@ -57,6 +62,7 @@ public class BankServiceImpl implements BankService {
         BankEntity entity = new BankEntity();
         entity.setBankName(jObject.get("bank_name").getAsString());
         bankDao.addBank(entity);
+        LOGGER.info("------addBank END--------------");
     }
 
     /**
@@ -65,7 +71,9 @@ public class BankServiceImpl implements BankService {
      */
     @Override
     public void updateBank(BankEntity entity) {
+        LOGGER.info("------updateBank START--------------");
         bankDao.updateBank(entity);
+        LOGGER.info("------updateBank END--------------");
     }
 
     /**
@@ -75,7 +83,9 @@ public class BankServiceImpl implements BankService {
      */
     @Override
     public ResultBean getBankById(Integer id) {
+        LOGGER.info("------getBankById START--------------");
         BankResponse entity = bankDao.getBankById(id);
+        LOGGER.info("------getBankById END--------------");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "bank" }));
     }
 

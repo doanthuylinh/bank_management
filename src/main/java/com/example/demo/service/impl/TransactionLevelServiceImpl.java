@@ -9,6 +9,8 @@ package com.example.demo.service.impl;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,8 @@ public class TransactionLevelServiceImpl implements TransactionLevelService {
     @Autowired
     private BankDao bankDao;
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionLevelServiceImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
@@ -51,6 +55,7 @@ public class TransactionLevelServiceImpl implements TransactionLevelService {
      */
     @Override
     public void addTransactionLevel(String json) throws ApiValidateException {
+        LOGGER.info("------addTransactionLevel START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
         Integer bankId = jObject.get("bank_id").getAsInt();
@@ -70,6 +75,8 @@ public class TransactionLevelServiceImpl implements TransactionLevelService {
         entity.setTransactionLevelType(jObject.get("transaction_level_type").getAsString());
 
         transactionLevelDao.addTransactionLevel(entity);
+
+        LOGGER.info("------addTransactionLevel END--------------");
     }
 
     /**
@@ -79,7 +86,9 @@ public class TransactionLevelServiceImpl implements TransactionLevelService {
      */
     @Override
     public ResultBean getListTransactionLevel(Integer bankId) {
+        LOGGER.info("------getListTransactionLevel START--------------");
         List<TransactionLevelResponse> entity = transactionLevelDao.getTransactionLevelEntityByBankId(bankId);
+        LOGGER.info("------getListTransactionLevel END--------------");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "transaction level" }));
     }
 

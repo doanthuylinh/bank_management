@@ -11,6 +11,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +36,17 @@ public class TransactionDaoImpl implements TransactionDao {
     @Autowired
     private EntityManager entityManager;
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionDaoImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
      */
     @Override
     public void addTransaction(TransactionEntity entity) {
+        LOGGER.info("------addTransaction START--------------");
         this.entityManager.persist(entity);
+        LOGGER.info("------addTransaction END--------------");
     }
 
     /**
@@ -51,6 +57,7 @@ public class TransactionDaoImpl implements TransactionDao {
     @SuppressWarnings("unchecked")
     @Override
     public List<TransactionEntity> getTransactionByUserId(Integer userId) {
+        LOGGER.info("------getTransactionByUserId START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.TransactionResponse(");
         sql.append("    te.transactionId, ");
@@ -85,6 +92,7 @@ public class TransactionDaoImpl implements TransactionDao {
         query.setParameter("userId", userId);
         List<TransactionEntity> entity = null;
         entity = query.getResultList();
+        LOGGER.info("------getTransactionByUserId END--------------");
         return entity;
     }
 
@@ -96,6 +104,7 @@ public class TransactionDaoImpl implements TransactionDao {
      */
     @Override
     public List<TransactionEntity> getTransaction(Integer userId, Integer bankId) {
+        LOGGER.info("------getTransaction START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.TransactionResponse(");
         sql.append("    te.transactionId, ");
@@ -132,6 +141,7 @@ public class TransactionDaoImpl implements TransactionDao {
         query.setParameter("bankId", bankId);
         List<TransactionEntity> entity = null;
         entity = query.getResultList();
+        LOGGER.info("------getTransaction END--------------");
         return entity;
     }
 

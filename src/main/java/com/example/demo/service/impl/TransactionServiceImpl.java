@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import com.example.demo.dao.TransactionLevelDao;
 import com.example.demo.response.TransactionLevelResponse;
 import com.example.demo.service.TransactionService;
 import com.example.demo.utils.ApiValidateException;
+import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
 import com.example.demo.utils.Regex;
 import com.google.gson.Gson;
@@ -49,6 +52,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionLevelDao transactionLevelDao;
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionServiceImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param json
@@ -56,10 +61,12 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public void addTransaction(String json) throws ApiValidateException {
+        LOGGER.info("------addTransaction START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         TransactionEntity entity = new TransactionEntity();
         //AccountEntity accountEntity = null;
         this.checkAccount(jObject, entity);
+        LOGGER.info("------addTransaction END--------------");
     }
 
     /**
@@ -68,8 +75,10 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
-    public ResultBean getListTransaction(Integer userId) {
-        List<TransactionEntity> entity = transactionDao.getTransactionByUserId(userId);
+    public ResultBean getListTransaction() {
+        LOGGER.info("------getListTransaction START--------------");
+        List<TransactionEntity> entity = transactionDao.getTransactionByUserId(Integer.parseInt(DataUtils.getUserIdByToken()));
+        LOGGER.info("------getListTransaction END--------------");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
     }
 
@@ -80,8 +89,10 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
-    public ResultBean getListTransaction(Integer userId, Integer bankId) {
-        List<TransactionEntity> entity = transactionDao.getTransaction(userId, bankId);
+    public ResultBean getListTransaction(Integer bankId) {
+        LOGGER.info("------getListTransaction START--------------");
+        List<TransactionEntity> entity = transactionDao.getTransaction(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
+        LOGGER.info("------getListTransaction END--------------");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
     }
 
@@ -93,6 +104,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @throws ApiValidateException
      */
     private AccountEntity checkAccount(JsonObject jObject, TransactionEntity entity) throws ApiValidateException {
+        LOGGER.info("------checkAccount START--------------");
         // kiem tra user ID duoc nhap dung chua
         String userIdString = jObject.get("user_id").getAsString();
         if (!userIdString.matches(Regex.ID_PATTERN)) {
@@ -122,6 +134,8 @@ public class TransactionServiceImpl implements TransactionService {
         entity.setTransactionMoney(jObject.get("transaction_money").getAsDouble());
         entity.setTransactionDate(new Date());
 
+        LOGGER.info("------checkAccount END--------------");
+
         return accountEntity;
     }
 
@@ -132,6 +146,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public void deposit(String json) throws ApiValidateException {
+        LOGGER.info("------deposit START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         TransactionEntity entity = new TransactionEntity();
         AccountEntity accountEntity = this.checkAccount(jObject, entity);
@@ -139,6 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
         entity.setTransactionType("0");
         transactionDao.addTransaction(entity);
         accountEntity.setBalance(balance);
+        LOGGER.info("------deposit END--------------");
     }
 
     /**
@@ -148,6 +164,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public void withdraw(String json) throws ApiValidateException {
+        LOGGER.info("------withdraw START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         TransactionEntity entity = new TransactionEntity();
         AccountEntity accountEntity = this.checkAccount(jObject, entity);
@@ -174,6 +191,7 @@ public class TransactionServiceImpl implements TransactionService {
         entity.setTransactionType("1");
         transactionDao.addTransaction(entity);
         accountEntity.setBalance(balance);
+        LOGGER.info("------withdraw END--------------");
     }
 
     /**
@@ -183,6 +201,8 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public void transfer(String json) throws ApiValidateException {
+        LOGGER.info("------transfer START--------------");
+
         // withdraw
         withdraw(json);
 
@@ -228,6 +248,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDao.addTransaction(entity);
         accountTargetEntity.setBalance(balance);
 
+        LOGGER.info("------transfer END--------------");
     }
 
 }

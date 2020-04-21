@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,14 +39,17 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
     @Autowired
     private EntityManager entityManager;
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionLevelDaoImpl.class);
+
     /**
      * @author: (VNEXT)LinhDT
      * @param entity
      */
     @Override
     public void addTransactionLevel(TransactionLevelEntity entity) {
+        LOGGER.info("------addTransactionLevel START--------------");
         this.entityManager.persist(entity);
-
+        LOGGER.info("------addTransactionLevel END--------------");
     }
 
     /**
@@ -54,6 +59,7 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
      */
     @Override
     public List<TransactionLevelResponse> getTransactionLevelEntityByBankId(Integer bankId) {
+        LOGGER.info("------getTransactionLevelEntityByBankId START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.TransactionLevelResponse(");
         sql.append("     tle.transactionLevelId, ");
@@ -70,6 +76,7 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
         query.setParameter("bankId", bankId);
         List<TransactionLevelResponse> entity = null;
         entity = query.getResultList();
+        LOGGER.info("------getTransactionLevelEntityByBankId END--------------");
         return entity;
     }
 
@@ -80,6 +87,7 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
      */
     @Override
     public TransactionLevelEntity getTransactionEntity(Integer bankId) {
+        LOGGER.info("------getTransactionEntity START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" FROM ");
         sql.append("    TransactionLevelEntity tle ");
@@ -93,6 +101,7 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
         } catch (NoResultException e) {
 
         }
+        LOGGER.info("------getTransactionEntity END--------------");
         return entity;
     }
 

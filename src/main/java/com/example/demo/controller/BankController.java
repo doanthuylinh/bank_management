@@ -6,6 +6,8 @@
 
 package com.example.demo.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,8 +41,11 @@ public class BankController {
     @Autowired
     private BankService bankService;
 
+    private static final Logger LOGGER = LogManager.getLogger(BankController.class);
+
     @RequestMapping(value = "/bank", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addBank(@RequestBody String entity) {
+        LOGGER.info("------addBank START--------------");
         try {
             bankService.addBank(entity);
         } catch (ApiValidateException e) {
@@ -49,11 +54,13 @@ public class BankController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------addBank END--------------");
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "bank" })), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/bank/{id}", method = RequestMethod.GET)
     public ResponseEntity<ResultBean> getBank(@PathVariable Integer id) {
+        LOGGER.info("------getBank START--------------");
         ResultBean entity = null;
         try {
             entity = bankService.getBankById(id);
@@ -61,12 +68,13 @@ public class BankController {
             e.printStackTrace();
             return new ResponseEntity<ResultBean>(entity, HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------getBank END--------------");
         return new ResponseEntity<ResultBean>(entity, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/bank/{id}", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<String> updateBank(@RequestBody BankEntity entity, @PathVariable Integer id) {
-
+        LOGGER.info("------updateBank START--------------");
         try {
             entity.setBankId(id);
             ;
@@ -75,6 +83,7 @@ public class BankController {
             e.printStackTrace();
             return new ResponseEntity<String>("update failed", HttpStatus.BAD_REQUEST);
         }
+        LOGGER.info("------updateBank END--------------");
         return new ResponseEntity<String>("update successed", HttpStatus.OK);
     }
 

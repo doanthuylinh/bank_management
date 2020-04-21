@@ -29,10 +29,9 @@ public interface TransactionService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param userId
      * @return
      */
-    public ResultBean getListTransaction(Integer userId);
+    public ResultBean getListTransaction();
 
     /**
      * @author: (VNEXT)LinhDT
@@ -40,7 +39,7 @@ public interface TransactionService {
      * @param bankId
      * @return
      */
-    public ResultBean getListTransaction(Integer userId, Integer bankId);
+    public ResultBean getListTransaction(Integer bankId);
 
     /**
      * @author: (VNEXT)LinhDT
