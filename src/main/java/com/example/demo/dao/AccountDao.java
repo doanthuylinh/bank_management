@@ -6,6 +6,8 @@
 
 package com.example.demo.dao;
 
+import java.util.List;
+
 import com.example.demo.bean.AccountEntity;
 import com.example.demo.response.AccountResponse;
 
@@ -29,12 +31,21 @@ public interface AccountDao {
     public AccountEntity getAccountEntity(Integer accountId);
 
     /**
+     * getAccountEntity
      * @author: (VNEXT)LinhDT
      * @param userId
      * @param bankId
      * @return
      */
-    public AccountEntity getAccountEntity(Integer userId, Integer bankId);
+    public List<AccountEntity> getAccountEntity(Integer userId, Integer bankId);
+
+    /**
+     * @author: (VNEXT)LinhDT
+     * @param userId
+     * @param accountId
+     * @return
+     */
+    public AccountEntity getAccountEntityByUserAndAcc(Integer userId, Integer accountId);
 
     /**
      * @author: (VNEXT)LinhDT

@@ -57,6 +57,7 @@ public class TransactionLevelDaoImpl implements TransactionLevelDao {
      * @param bankId
      * @return
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<TransactionLevelResponse> getTransactionLevelEntityByBankId(Integer bankId) {
         LOGGER.info("------getTransactionLevelEntityByBankId START--------------");

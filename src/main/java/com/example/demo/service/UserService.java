@@ -49,4 +49,11 @@ public interface UserService {
      */
     public Map<String, String> login(String entity) throws ApiValidateException;
 
+    /**
+     * changePassword
+     * @author: (VNEXT)LinhDT
+     * @param pass
+     * @throws ApiValidateException
+     */
+    public void changePassword(String pass) throws ApiValidateException;
 }

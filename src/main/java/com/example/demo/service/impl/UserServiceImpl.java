@@ -18,10 +18,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.WebSecurityConfig;
 import com.example.demo.bean.ResultBean;
 import com.example.demo.bean.UserDetail;
 import com.example.demo.bean.UserEntity;
@@ -32,6 +33,7 @@ import com.example.demo.response.BankResponse;
 import com.example.demo.response.UserResponse;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.ApiValidateException;
+import com.example.demo.utils.ConstantColumn;
 import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
 import com.example.demo.utils.Regex;
@@ -64,6 +66,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
     /**
@@ -75,24 +79,26 @@ public class UserServiceImpl implements UserService {
     public void addUser(String json) throws ApiValidateException {
         LOGGER.info("------addUser START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
+
         // get phone duoc nhap vao va kiem tra
-        String phone = jObject.get("phone").getAsString();
-        if (!phone.matches(Regex.PHONE_PATTERN)) {
+        String phone = DataUtils.getAsStringByJson(jObject, ConstantColumn.PHONE);
+        if (Objects.isNull(phone) || !phone.matches(Regex.PHONE_PATTERN)) {
             throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
+
         // get userName duoc nhap vao va kiem tra
-        String userName = jObject.get("user_name").getAsString();
-        if (!userName.matches(Regex.NAME_PATTERN)) {
+        String userName = DataUtils.getAsStringByJson(jObject, ConstantColumn.USER_NAME);
+        if (Objects.isNull(userName) || !userName.matches(Regex.NAME_PATTERN)) {
             throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
         }
         // get ngay sinh duoc nhap vao va kiem tra
-        String dob = jObject.get("dob").getAsString();
-        if (!dob.matches(Regex.DATE_PATTERN)) {
+        String dob = DataUtils.getAsStringByJson(jObject, ConstantColumn.DOB);
+        if (Objects.isNull(dob) || !dob.matches(Regex.DATE_PATTERN)) {
             throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
         }
         // get password duoc nhap vao va kiem tra
-        String pass = jObject.get("pass").getAsString();
-        if (!pass.matches(Regex.PASSWORD_PATTERN)) {
+        String pass = DataUtils.getAsStringByJson(jObject, ConstantColumn.PASS);
+        if (Objects.isNull(pass) || !pass.matches(Regex.PASSWORD_PATTERN)) {
             throw new ApiValidateException("ERR08", MessageUtils.getMessage("ERR08"));
         }
         // get user by phone
@@ -106,36 +112,16 @@ public class UserServiceImpl implements UserService {
         entity.setUserName(userName);
         entity.setPhone(phone);
         entity.setDob(dob);
-        entity.setPass(new BCryptPasswordEncoder().encode(pass));
+        entity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
         userDao.addUser(entity);
         LOGGER.info("------addUser END------------");
     }
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param entity
+     * @param json
      * @throws ApiValidateException
      */
-    //    @Override
-    //    public void updateUser(UserEntity entity) throws ApiValidateException {
-    //        LOGGER.info("------updateUser START--------------");
-    //        UserEntity userEntity = userDao.getUserEntity(entity.getUserId());
-    //        if (entity.getUserName() == null) {
-    //            entity.setUserName(userEntity.getUserName());
-    //        }
-    //        if (entity.getPhone() == null) {
-    //            entity.setPhone(userEntity.getPhone());
-    //        }
-    //        if (entity.getDob() == null) {
-    //            entity.setDob(userEntity.getDob());
-    //        }
-    //        if (entity.getPass() == null) {
-    //            entity.setPass(userEntity.getPass());
-    //        }
-    //        userDao.updateUser(entity);
-    //
-    //        LOGGER.info("------updateUser END------------");
-    //    }
 
     @Override
     public void updateUser(String json) throws ApiValidateException {
@@ -145,40 +131,31 @@ public class UserServiceImpl implements UserService {
 
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
-        String userName = null;
-        userName = DataUtils.getAsStringByJson(jObject, "user_name");
-        if (!userName.matches(Regex.NAME_PATTERN)) {
+        String userName = DataUtils.getAsStringByJson(jObject, "user_name");
+        if (Objects.isNull(userName) || !userName.matches(Regex.NAME_PATTERN)) {
             throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
         }
         entity.setUserName(userName);
 
-        String phone = null;
-        phone = DataUtils.getAsStringByJson(jObject, "phone");
-        if (!phone.matches(Regex.PHONE_PATTERN)) {
+        String phone = DataUtils.getAsStringByJson(jObject, "phone");
+        if (Objects.isNull(phone) || !phone.matches(Regex.PHONE_PATTERN)) {
             throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
-        entity.setPhone(phone);
 
-        String dob = null;
-        dob = DataUtils.getAsStringByJson(jObject, "dob");
-        if (!dob.matches(Regex.DATE_PATTERN)) {
+        if (!entity.getPhone().equals(phone)) {
+            UserEntity userEntity = userDao.getUserByPhone(phone);
+            // check xem phone da co trong db hay chua, neu co roi thi throw message phone da ton tai
+            if (!Objects.isNull(userEntity)) {
+                throw new ApiValidateException("ERR03", MessageUtils.getMessage("ERR03", new Object[] { "Phone" }));
+            }
+            entity.setPhone(phone);
+        }
+
+        String dob = DataUtils.getAsStringByJson(jObject, "dob");
+        if (Objects.isNull(dob) || !dob.matches(Regex.DATE_PATTERN)) {
             throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
         }
         entity.setDob(dob);
-
-        String pass = null;
-        try {
-            // get password duoc nhap vao va kiem tra
-            pass = jObject.get("pass").getAsString();
-            if (!pass.matches(Regex.PASSWORD_PATTERN)) {
-                throw new ApiValidateException("400", MessageUtils.getMessage("ERR08"));
-            }
-            entity.setPass(pass);
-        } catch (Exception e) {
-        }
-        if (pass == null) {
-            entity.setPass(entity.getPass());
-        }
 
         userDao.updateUser(entity);
 
@@ -225,6 +202,38 @@ public class UserServiceImpl implements UserService {
         result.put("token", tmp);
         LOGGER.info("------login END------------");
         return result;
+    }
+
+    @Override
+    public void changePassword(String json) throws ApiValidateException {
+        LOGGER.info("------changePassword START--------------");
+        JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
+
+        UserEntity userEntity = userDao.getUserEntity(Integer.parseInt(DataUtils.getUserIdByToken()));
+
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.PASS)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.PASS }));
+        }
+
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.CONFIRMED_PASS)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.CONFIRMED_PASS }));
+        }
+
+        String pass = DataUtils.getAsStringByJson(jObject, ConstantColumn.PASS);
+        if (!pass.matches(Regex.PASSWORD_PATTERN)) {
+            throw new ApiValidateException("ERR08", MessageUtils.getMessage("ERR08"));
+        }
+
+        String confirmedPass = DataUtils.getAsStringByJson(jObject, ConstantColumn.CONFIRMED_PASS);
+
+        if (!pass.equals(confirmedPass)) {
+            throw new ApiValidateException("ERR13", MessageUtils.getMessage("ERR13"));
+        }
+        
+        userEntity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
+        userDao.updateUser(userEntity);
+
+        LOGGER.info("------changePassword END------------");
     }
 
 }

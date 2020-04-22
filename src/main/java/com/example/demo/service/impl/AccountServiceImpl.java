@@ -6,11 +6,13 @@
 
 package com.example.demo.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import com.example.demo.dao.UserDao;
 import com.example.demo.response.AccountResponse;
 import com.example.demo.service.AccountService;
 import com.example.demo.utils.ApiValidateException;
+import com.example.demo.utils.ConstantColumn;
 import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
 import com.example.demo.utils.Regex;
@@ -64,38 +67,37 @@ public class AccountServiceImpl implements AccountService {
 
         Integer userId = userDao.getUserById(Integer.parseInt(DataUtils.getUserIdByToken())).getUserId();
 
-        // kiem tra bank ID validate chua?
-        String bankIdString = jObject.get("bank_id").getAsString();
-        if (!bankIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "Bank ID" }));
+        // kiem tra bank id co null khong?
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.BANK_ID)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.BANK_ID }));
         }
 
-        Integer bankId = jObject.get("bank_id").getAsInt();
+        Integer bankId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.BANK_ID);
 
         BankEntity bankEntity = bankDao.getBankEntityById(bankId);
         // check xem trong db bang bank co bankId duoc nhap chua
         if (Objects.isNull(bankEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR02", new Object[] { "Bank" }));
+            throw new ApiValidateException("ERR02", MessageUtils.getMessage("ERR02", new Object[] { "Bank" }));
         }
 
-        AccountEntity accountEntity = accountDao.getAccountEntity(userId, bankId);
-        // check xem trong db bang account co account nao chua
-        if (!Objects.isNull(accountEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR03", new Object[] { "Account" }));
+        List<AccountEntity> accountEntity = accountDao.getAccountEntity(userId, bankId);
+        // check xem trong db bang account co 2 account chua
+        if (accountEntity.size() >= 2) {
+            throw new ApiValidateException("ERR11", MessageUtils.getMessage("ERR11"));
         }
 
-        // kiem tra so du tai khoan duoc nhap dung chua
-        String balanceString = jObject.get("balance").getAsString();
-        if (!balanceString.matches(Regex.MONEY_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "money" }));
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.BALANCE)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.BALANCE }));
         }
+
+        Double balance = DataUtils.getAsDoubleByJson(jObject, ConstantColumn.BALANCE);
 
         // add account
         AccountEntity entity = new AccountEntity();
 
         entity.setUserId(userId);
         entity.setBankId(bankId);
-        entity.setBalance(jObject.get("balance").getAsDouble());
+        entity.setBalance(balance);
 
         accountDao.addAccount(entity);
 

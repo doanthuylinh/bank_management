@@ -45,6 +45,9 @@ public class TransactionResponse {
     @JsonProperty("transaction_money")
     private Double transactionMoney;
 
+    @JsonProperty("transaction_fee")
+    private Double transactionFee;
+
     @JsonProperty("transaction_date")
     private Date transactionDate;
 
@@ -123,6 +126,14 @@ public class TransactionResponse {
 
     public void setTransactionMoney(Double transactionMoney) {
         this.transactionMoney = transactionMoney;
+    }
+
+    public Double getTransactionFee() {
+        return transactionFee;
+    }
+
+    public void setTransactionFee(Double transactionFee) {
+        this.transactionFee = transactionFee;
     }
 
     public Date getTransactionDate() {
@@ -204,8 +215,8 @@ public class TransactionResponse {
     }
 
     public TransactionResponse(Integer transactionId, Integer accountId, Integer userId, String userName, Integer bankId, String bankName,
-            Double transactionMoney, Date transactionDate, String transactionType, Integer fromUserId, Integer toUserId, Integer bankIdTarget,
-            String fromUserName, String toUserName, String bankTargetName) {
+            Double transactionMoney, Double transactionFee, Date transactionDate, String transactionType, Integer fromUserId, Integer toUserId,
+            Integer bankIdTarget, String fromUserName, String toUserName, String bankTargetName) {
         super();
         this.transactionId = transactionId;
         this.accountId = accountId;
@@ -214,6 +225,7 @@ public class TransactionResponse {
         this.bankId = bankId;
         this.bankName = bankName;
         this.transactionMoney = transactionMoney;
+        this.transactionFee = transactionFee;
         this.transactionDate = transactionDate;
         this.transactionType = transactionType;
         this.fromUserId = fromUserId;

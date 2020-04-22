@@ -6,6 +6,8 @@
 
 package com.example.demo.utils;
 
+import java.util.Objects;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,28 +38,44 @@ public class DataUtils {
         }
         return null;
     }
-    
-    public static Integer getAsIntegerByJson(JsonObject object, String member) throws ApiValidateException{
-        try {
-            return object.get(member).getAsInt();
-        } catch (Exception e) {
-            throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
+
+    public static boolean isNullWithMemberNameByJson(JsonObject object, String member) throws ApiValidateException {
+        if(!object.has(member) || object.has(member) && (object.get(member).equals(null) ||  object.get(member).equals(""))) {
+            return true;
         }
+        return false;
     }
     
-    public static String getAsStringByJson(JsonObject object, String member) throws ApiValidateException{
+    public static Integer getAsIntegerByJson(JsonObject object, String member) throws ApiValidateException {
         try {
-            return object.get(member).getAsString();
+            if (object.has(member)) {
+                return object.get(member).getAsInt();
+            }
         } catch (Exception e) {
             throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
         }
+        return null;
     }
-    
-    public static Double getAsDoubleByJson(JsonObject object, String member) throws ApiValidateException{
+
+    public static String getAsStringByJson(JsonObject object, String member) throws ApiValidateException {
         try {
-            return object.get(member).getAsDouble();
+            if (object.has(member)) {
+                return object.get(member).getAsString();
+            }
         } catch (Exception e) {
             throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
         }
+        return null;
+    }
+
+    public static Double getAsDoubleByJson(JsonObject object, String member) throws ApiValidateException {
+        try {
+            if(object.has(member)) {
+                return object.get(member).getAsDouble();
+            }
+        } catch (Exception e) {
+            throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
+        }
+        return null;
     }
 }

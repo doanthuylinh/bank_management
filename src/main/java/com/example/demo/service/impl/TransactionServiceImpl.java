@@ -10,7 +10,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.csv.CSVFormat;
@@ -97,15 +99,14 @@ public class TransactionServiceImpl implements TransactionService {
     private AccountEntity checkAccount(JsonObject jObject, TransactionEntity entity, Boolean isTargetUser) throws ApiValidateException {
         LOGGER.info("------checkAccount START--------------");
 
-        Integer bankId = 0;
+        Integer accountId = 0;
         AccountEntity accountEntity = null;
         if (!isTargetUser) {
-            bankId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.BANK_ID);
-            accountEntity = accountDao.getAccountEntity(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
+            accountId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.ACCOUNT_ID);
+            accountEntity = accountDao.getAccountEntityByUserAndAcc(Integer.parseInt(DataUtils.getUserIdByToken()), accountId);
         } else {
-            bankId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.BANK_ID_TARGET);
-            Integer targetUserId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.TO_USER_ID);
-            accountEntity = accountDao.getAccountEntity(targetUserId, bankId);
+            accountId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.TO_ACCOUNT_ID);
+            accountEntity = accountDao.getAccountEntity(accountId);
         }
 
         // check xem account co ton tai khong
@@ -153,21 +154,23 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      * @throws ApiValidateException
      */
-    private Double getBalance(TransactionEntity entity, AccountEntity accountEntity) throws ApiValidateException {
+    private Map<String, Double> getBalance(TransactionEntity entity, AccountEntity accountEntity) throws ApiValidateException {
         LOGGER.info("------getBalance START--------------");
         Integer bankId = accountEntity.getBankId();
         List<TransactionLevelResponse> lsTransactionLevelResponses = transactionLevelDao.getTransactionLevelEntityByBankId(bankId);
         Double balance = null;
+        Double fee = null;
         for (TransactionLevelResponse transactionLevelEntity : lsTransactionLevelResponses) {
             if (transactionLevelEntity.getTransactionMin() <= entity.getTransactionMoney()
                     && entity.getTransactionMoney() < transactionLevelEntity.getTransactionMax()) {
                 // neu la type 0 thi tru them phi, neu khong phai type 0 thi lay muc phi nhan
                 // voi so tien giao dich
                 if (transactionLevelEntity.getTransactionLevelType().equals("0")) {
-                    balance = accountEntity.getBalance() - entity.getTransactionMoney() - transactionLevelEntity.getTransactionFee();
+                    fee = transactionLevelEntity.getTransactionFee();
                 } else {
-                    balance = accountEntity.getBalance() - entity.getTransactionMoney() * (1 + transactionLevelEntity.getTransactionFee());
+                    fee = entity.getTransactionMoney() * transactionLevelEntity.getTransactionFee();
                 }
+                balance = accountEntity.getBalance() - entity.getTransactionMoney() - fee;
                 break;
             }
         }
@@ -176,7 +179,10 @@ public class TransactionServiceImpl implements TransactionService {
             throw new ApiValidateException("ERR04", MessageUtils.getMessage("ERR04"));
         }
         LOGGER.info("------getBalance END--------------");
-        return balance;
+        Map<String, Double> result = new HashMap<String, Double>();
+        result.put("balance", balance);
+        result.put("fee", fee);
+        return result;
     }
 
     /**
@@ -190,10 +196,11 @@ public class TransactionServiceImpl implements TransactionService {
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         TransactionEntity entity = new TransactionEntity();
         AccountEntity accountEntity = this.checkAccount(jObject, entity, false);
-        Double balance = this.getBalance(entity, accountEntity);
+        Map<String, Double> result = this.getBalance(entity, accountEntity);
         entity.setTransactionType("1");
+        entity.setTransactionFee(result.get("fee"));
         transactionDao.addTransaction(entity);
-        accountEntity.setBalance(balance);
+        accountEntity.setBalance(result.get("balance"));
         LOGGER.info("------withdraw END--------------");
     }
 
@@ -212,10 +219,12 @@ public class TransactionServiceImpl implements TransactionService {
         AccountEntity accountEntityTarget = this.checkAccount(jObject, entityTarget, true);
         AccountEntity accountEntity = this.checkAccount(jObject, entity, false);
 
-        Double balance = this.getBalance(entity, accountEntity);
+        Map<String, Double> result = this.getBalance(entity, accountEntity);
 
         entity.setTransactionType("1");
         entityTarget.setTransactionType("0");
+
+        entity.setTransactionFee(result.get("fee"));
 
         entity.setBankIdTarget(entityTarget.getBankId());
         entityTarget.setBankIdTarget(entity.getBankId());
@@ -226,7 +235,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDao.addTransaction(entity);
         transactionDao.addTransaction(entityTarget);
 
-        accountEntity.setBalance(balance);
+        accountEntity.setBalance(result.get("balance"));
         accountEntityTarget.setBalance(accountEntityTarget.getBalance() + entityTarget.getTransactionMoney());
         LOGGER.info("------transfer END--------------");
     }
@@ -244,14 +253,15 @@ public class TransactionServiceImpl implements TransactionService {
         String csvFile = "D:/CSV/output/transaction_output" + fileName + ".csv";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
                 CSVPrinter csvPrinter = new CSVPrinter(writer,
-                        CSVFormat.DEFAULT.withHeader("TransactionID", "AccountID", "UserID", "UserName", "BankID", "BankName", "MoneyTransaction", "Date",
-                                "Type", "FromUserID", "ToUserID", "BankIDTarget", "FromUserName", "ToUserName", "BankTargetName"));) {
+                        CSVFormat.DEFAULT.withHeader("TransactionID", "AccountID", "UserID", "UserName", "BankID", "BankName", "TransactionMoney",
+                                "TransactionFee", "Date", "Type", "FromUserID", "ToUserID", "BankIDTarget", "FromUserName", "ToUserName", "BankTargetName"));) {
             for (TransactionResponse transactionResponse : entity) {
                 csvPrinter.printRecord(transactionResponse.getTransactionId(), transactionResponse.getAccountId(), transactionResponse.getUserId(),
                         transactionResponse.getUserName(), transactionResponse.getBankId(), transactionResponse.getBankName(),
-                        transactionResponse.getTransactionMoney(), transactionResponse.getTransactionDate(), transactionResponse.getTransactionType(),
-                        transactionResponse.getFromUserId(), transactionResponse.getToUserId(), transactionResponse.getBankIdTarget(),
-                        transactionResponse.getFromUserName(), transactionResponse.getToUserName(), transactionResponse.getBankTargetName());
+                        transactionResponse.getTransactionMoney(), transactionResponse.getTransactionFee(), transactionResponse.getTransactionDate(),
+                        transactionResponse.getTransactionType(), transactionResponse.getFromUserId(), transactionResponse.getToUserId(),
+                        transactionResponse.getBankIdTarget(), transactionResponse.getFromUserName(), transactionResponse.getToUserName(),
+                        transactionResponse.getBankTargetName());
             }
             csvPrinter.flush();
         } catch (IOException e) {

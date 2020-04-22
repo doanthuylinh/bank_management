@@ -68,6 +68,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.bankId, ");
         sql.append("    be.bankName, ");
         sql.append("    te.transactionMoney, ");
+        sql.append("    te.transactionFee, ");
         sql.append("    te.transactionDate, ");
         sql.append("    te.transactionType, ");
         sql.append("    te.fromUserId, ");
@@ -135,6 +136,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.bankId, ");
         sql.append("    be.bankName, ");
         sql.append("    te.transactionMoney, ");
+        sql.append("    te.transactionFee, ");
         sql.append("    te.transactionDate, ");
         sql.append("    te.transactionType, ");
         sql.append("    te.fromUserId, ");
@@ -206,6 +208,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.bankId, ");
         sql.append("    be.bankName, ");
         sql.append("    te.transactionMoney, ");
+        sql.append("    te.transactionFee, ");
         sql.append("    te.transactionDate, ");
         sql.append("    te.transactionType, ");
         sql.append("    te.fromUserId, ");

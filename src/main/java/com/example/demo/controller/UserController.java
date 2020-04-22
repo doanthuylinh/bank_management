@@ -104,4 +104,20 @@ public class UserController {
         return new ResponseEntity<ResultBean>(new ResultBean(result, "200", MessageUtils.getMessage("MSG03")), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/changepassword", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<ResultBean> changePassword(@RequestBody String entity) {
+        LOGGER.info("------changePassword START--------------");
+
+        try {
+            userService.changePassword(entity);
+        } catch (ApiValidateException e) {
+            return new ResponseEntity<ResultBean>(new ResultBean(e.getCode(), e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
+        }
+        LOGGER.info("------changePassword END------------");
+        return new ResponseEntity<ResultBean>(new ResultBean("200", MessageUtils.getMessage("MSG04")), HttpStatus.OK);
+    }
+
 }

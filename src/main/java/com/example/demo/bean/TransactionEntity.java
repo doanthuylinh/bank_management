@@ -58,6 +58,9 @@ public class TransactionEntity implements Serializable {
     @Column(name = "transaction_money")
     private Double transactionMoney;
 
+    @Column(name = "transaction_fee")
+    private Double transactionFee;
+
     @Column(name = "transaction_date")
     private Date transactionDate;
 
@@ -128,6 +131,14 @@ public class TransactionEntity implements Serializable {
         this.transactionMoney = transactionMoney;
     }
 
+    public Double getTransactionFee() {
+        return transactionFee;
+    }
+
+    public void setTransactionFee(Double transactionFee) {
+        this.transactionFee = transactionFee;
+    }
+
     public Date getTransactionDate() {
         return transactionDate;
     }
@@ -150,7 +161,7 @@ public class TransactionEntity implements Serializable {
     }
 
     public TransactionEntity(Integer transactionId, Integer accountId, Integer userId, Integer bankId, Integer fromUserId, Integer toUserId,
-            Integer bankIdTarget, Double transactionMoney, Date transactionDate, String transactionType) {
+            Integer bankIdTarget, Double transactionMoney, Double transactionFee, Date transactionDate, String transactionType) {
         super();
         this.transactionId = transactionId;
         this.accountId = accountId;
@@ -160,6 +171,7 @@ public class TransactionEntity implements Serializable {
         this.toUserId = toUserId;
         this.bankIdTarget = bankIdTarget;
         this.transactionMoney = transactionMoney;
+        this.transactionFee = transactionFee;
         this.transactionDate = transactionDate;
         this.transactionType = transactionType;
     }

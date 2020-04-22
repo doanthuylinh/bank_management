@@ -6,6 +6,8 @@
 
 package com.example.demo.dao.impl;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -121,8 +123,9 @@ public class AccountDaoImpl implements AccountDao {
         return entity;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public AccountEntity getAccountEntity(Integer userId, Integer bankId) {
+    public List<AccountEntity> getAccountEntity(Integer userId, Integer bankId) {
         LOGGER.info("------getAccountEntity START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" FROM ");
@@ -136,14 +139,38 @@ public class AccountDaoImpl implements AccountDao {
 
         query.setParameter("userId", userId);
         query.setParameter("bankId", bankId);
+        List<AccountEntity> entity = null;
+
+        entity = query.getResultList();
+
+        LOGGER.info("------getAccountEntity END--------------");
+        return entity;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public AccountEntity getAccountEntityByUserAndAcc(Integer userId, Integer accountId) {
+        LOGGER.info("------getAccountEntity START--------------");
+        StringBuilder sql = new StringBuilder();
+        sql.append(" FROM ");
+        sql.append("    AccountEntity ae ");
+        sql.append(" WHERE ");
+        sql.append("    ae.userId = :userId ");
+        sql.append(" AND ");
+        sql.append("    ae.accountId = :accountId ");
+
+        Query query = this.entityManager.createQuery(sql.toString());
+
+        query.setParameter("userId", userId);
+        query.setParameter("accountId", accountId);
         AccountEntity entity = null;
         try {
             entity = (AccountEntity) query.getSingleResult();
         } catch (NoResultException e) {
 
         }
+
         LOGGER.info("------getAccountEntity END--------------");
         return entity;
     }
-
 }

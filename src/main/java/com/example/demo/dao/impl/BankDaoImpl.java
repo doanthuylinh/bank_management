@@ -100,6 +100,8 @@ public class BankDaoImpl implements BankDao {
      * @param userId
      * @return
      */
+
+    @SuppressWarnings("unchecked")
     @Override
     public List<BankResponse> getListBankByUserId(Integer userId) {
         LOGGER.info("------getListBankByUserId START--------------");
