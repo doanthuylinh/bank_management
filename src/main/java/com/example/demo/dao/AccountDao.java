@@ -23,6 +23,13 @@ public interface AccountDao {
 
     /**
      * @author: (VNEXT)LinhDT
+     * @param accountId
+     * @return
+     */
+    public AccountEntity getAccountEntity(Integer accountId);
+
+    /**
+     * @author: (VNEXT)LinhDT
      * @param userId
      * @param bankId
      * @return

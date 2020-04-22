@@ -78,28 +78,28 @@ public class UserServiceImpl implements UserService {
         // get phone duoc nhap vao va kiem tra
         String phone = jObject.get("phone").getAsString();
         if (!phone.matches(Regex.PHONE_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR06"));
+            throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
         // get userName duoc nhap vao va kiem tra
         String userName = jObject.get("user_name").getAsString();
         if (!userName.matches(Regex.NAME_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR07"));
+            throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
         }
         // get ngay sinh duoc nhap vao va kiem tra
         String dob = jObject.get("dob").getAsString();
         if (!dob.matches(Regex.DATE_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
+            throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
         }
         // get password duoc nhap vao va kiem tra
         String pass = jObject.get("pass").getAsString();
         if (!pass.matches(Regex.PASSWORD_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR08"));
+            throw new ApiValidateException("ERR08", MessageUtils.getMessage("ERR08"));
         }
         // get user by phone
         UserEntity userEntity = userDao.getUserByPhone(phone);
         // check xem phone da co trong db hay chua, neu co roi thi throw message phone da ton tai
         if (!Objects.isNull(userEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR03", new Object[] { "Phone" }));
+            throw new ApiValidateException("ERR03", MessageUtils.getMessage("ERR03", new Object[] { "Phone" }));
         }
 
         UserEntity entity = new UserEntity();
@@ -146,52 +146,27 @@ public class UserServiceImpl implements UserService {
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
         String userName = null;
-        try {
-            // get userName duoc nhap vao va kiem tra
-            userName = jObject.get("user_name").getAsString();
-            if (!userName.matches(Regex.NAME_PATTERN)) {
-                throw new ApiValidateException("400", MessageUtils.getMessage("ERR07"));
-            }
-            entity.setUserName(userName);
-        } catch (Exception e) {
-
+        userName = DataUtils.getAsStringByJson(jObject, "user_name");
+        if (!userName.matches(Regex.NAME_PATTERN)) {
+            throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
         }
-        if (userName == null) {
-            entity.setUserName(entity.getUserName());
-        }
+        entity.setUserName(userName);
 
         String phone = null;
-        try {
-            // get phone duoc nhap vao va kiem tra
-            phone = jObject.get("phone").getAsString();
-            if (!phone.matches(Regex.PHONE_PATTERN)) {
-                throw new ApiValidateException("400", MessageUtils.getMessage("ERR06"));
-            }
-            entity.setPhone(phone);
-        } catch (Exception e) {
-
+        phone = DataUtils.getAsStringByJson(jObject, "phone");
+        if (!phone.matches(Regex.PHONE_PATTERN)) {
+            throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
-        if (phone == null) {
-            entity.setPhone(entity.getPhone());
-        }
+        entity.setPhone(phone);
 
         String dob = null;
-        try {
-            // get dob duoc nhap vao va kiem tra
-            dob = jObject.get("dob").getAsString();
-            if (!dob.matches(Regex.DATE_PATTERN)) {
-                throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
-            }
-            entity.setDob(dob);
-        } catch (Exception e) {
-
+        dob = DataUtils.getAsStringByJson(jObject, "dob");
+        if (!dob.matches(Regex.DATE_PATTERN)) {
+            throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
         }
-        if (dob == null) {
-            entity.setDob(entity.getDob());
-        }
+        entity.setDob(dob);
 
         String pass = null;
-
         try {
             // get password duoc nhap vao va kiem tra
             pass = jObject.get("pass").getAsString();
@@ -200,7 +175,6 @@ public class UserServiceImpl implements UserService {
             }
             entity.setPass(pass);
         } catch (Exception e) {
-
         }
         if (pass == null) {
             entity.setPass(entity.getPass());
@@ -213,7 +187,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param id
      * @return
      */
     @Override
@@ -223,12 +196,12 @@ public class UserServiceImpl implements UserService {
         List<BankResponse> listBank = bankDao.getListBankByUserId(entity.getUserId());
         entity.setBank(listBank);
         LOGGER.info("------getUserById END------------");
-        return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "user" }));
+        return new ResultBean(entity, "MSG01", MessageUtils.getMessage("MSG01", new Object[] { "user" }));
     }
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param entity
+     * @param json
      * @throws ApiValidateException
      */
     @Override
@@ -245,7 +218,7 @@ public class UserServiceImpl implements UserService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             tmp = tokenProvider.generateToken((UserDetail) authentication.getPrincipal());
         } catch (Exception e) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR05"));
+            throw new ApiValidateException("ERR05", MessageUtils.getMessage("ERR05"));
         }
         Map<String, String> result = new HashMap<String, String>();
         result.put("type", "Bearer");

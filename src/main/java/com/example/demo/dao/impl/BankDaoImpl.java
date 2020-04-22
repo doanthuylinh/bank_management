@@ -104,7 +104,7 @@ public class BankDaoImpl implements BankDao {
     public List<BankResponse> getListBankByUserId(Integer userId) {
         LOGGER.info("------getListBankByUserId START--------------");
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT new com.example.demo.response.BankResponse(be.bankId, be.bankName, ae.balance)");
+        sql.append(" SELECT new com.example.demo.response.BankResponse(ae.accountId, be.bankId, be.bankName, ae.balance)");
         sql.append(" FROM ");
         sql.append("    BankEntity be ");
         sql.append(" JOIN ");
@@ -153,6 +153,27 @@ public class BankDaoImpl implements BankDao {
 
         }
         LOGGER.info("------getBankByName END--------------");
+        return entity;
+    }
+
+    @Override
+    public BankEntity getBankEntityById(Integer bankId) {
+        LOGGER.info("------getBankEntityById START--------------");
+        StringBuilder sql = new StringBuilder();
+        sql.append(" FROM ");
+        sql.append("    BankEntity be ");
+        sql.append(" WHERE ");
+        sql.append("    be.bankId = :bankId ");
+
+        Query query = this.entityManager.createQuery(sql.toString());
+        query.setParameter("bankId", bankId);
+        BankEntity entity = null;
+        try {
+            entity = (BankEntity) query.getSingleResult();
+        } catch (NoResultException e) {
+
+        }
+        LOGGER.info("------getBankEntityById END--------------");
         return entity;
     }
 

@@ -61,14 +61,20 @@ public class TransactionDaoImpl implements TransactionDao {
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.TransactionResponse(");
         sql.append("    te.transactionId, ");
+        sql.append("    te.accountId, ");
         sql.append("    te.userId, ");
         sql.append("    ue.userName, ");
         sql.append("    te.bankId, ");
         sql.append("    be.bankName, ");
         sql.append("    te.transactionMoney, ");
         sql.append("    te.transactionDate, ");
-        sql.append("    te.transactionType) ");
-
+        sql.append("    te.transactionType, ");
+        sql.append("    te.fromUserId, ");
+        sql.append("    te.toUserId, ");
+        sql.append("    te.bankIdTarget, ");
+        sql.append("    ue1.userName, ");
+        sql.append("    ue2.userName, ");
+        sql.append("    be1.bankName ) ");
         sql.append(" FROM ");
         sql.append("    TransactionEntity te ");
         sql.append(" JOIN ");
@@ -78,16 +84,29 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append(" JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
-        sql.append("    (te.userId = ae.userId ");
+        sql.append("    (te.accountId = ae.accountId ");
+        sql.append(" AND ");
+        sql.append("    te.userId = ae.userId ");
         sql.append(" AND ");
         sql.append("    te.bankId = ae.bankId) ");
         sql.append(" JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    UserEntity ue1 ");
+        sql.append(" ON ");
+        sql.append("    ue1.userId = te.fromUserId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    UserEntity ue2 ");
+        sql.append(" ON ");
+        sql.append("    ue2.userId = te.toUserId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    BankEntity be1 ");
+        sql.append(" ON ");
+        sql.append("    be1.bankId = te.bankIdTarget ");
         sql.append(" WHERE ");
         sql.append("    te.userId = :userId ");
-
         Query query = this.entityManager.createQuery(sql.toString());
         query.setParameter("userId", userId);
         List<TransactionEntity> entity = null;
@@ -102,20 +121,27 @@ public class TransactionDaoImpl implements TransactionDao {
      * @param bankId
      * @return
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<TransactionEntity> getTransaction(Integer userId, Integer bankId) {
         LOGGER.info("------getTransaction START--------------");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.TransactionResponse(");
         sql.append("    te.transactionId, ");
+        sql.append("    te.accountId, ");
         sql.append("    te.userId, ");
         sql.append("    ue.userName, ");
         sql.append("    te.bankId, ");
         sql.append("    be.bankName, ");
         sql.append("    te.transactionMoney, ");
         sql.append("    te.transactionDate, ");
-        sql.append("    te.transactionType) ");
-
+        sql.append("    te.transactionType, ");
+        sql.append("    te.fromUserId, ");
+        sql.append("    te.toUserId, ");
+        sql.append("    te.bankIdTarget, ");
+        sql.append("    ue1.userName, ");
+        sql.append("    ue2.userName, ");
+        sql.append("    be1.bankName ) ");
         sql.append(" FROM ");
         sql.append("    TransactionEntity te ");
         sql.append(" JOIN ");
@@ -125,17 +151,31 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append(" JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
-        sql.append("    (te.userId = ae.userId ");
+        sql.append("    (te.accountId = ae.accountId ");
+        sql.append(" AND ");
+        sql.append("    te.userId = ae.userId ");
         sql.append(" AND ");
         sql.append("    te.bankId = ae.bankId) ");
         sql.append(" JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    UserEntity ue1 ");
+        sql.append(" ON ");
+        sql.append("    ue1.userId = te.fromUserId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    UserEntity ue2 ");
+        sql.append(" ON ");
+        sql.append("    ue2.userId = te.toUserId ");
+        sql.append(" LEFT JOIN ");
+        sql.append("    BankEntity be1 ");
+        sql.append(" ON ");
+        sql.append("    be1.bankId = te.bankIdTarget ");
         sql.append(" WHERE ");
-        sql.append("    (te.userId = :userId ");
+        sql.append("    te.userId = :userId ");
         sql.append(" AND ");
-        sql.append("    te.bankId = :bankId) ");
+        sql.append("    te.bankId = :bankId ");
         Query query = this.entityManager.createQuery(sql.toString());
         query.setParameter("userId", userId);
         query.setParameter("bankId", bankId);

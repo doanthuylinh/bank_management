@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.bean.AccountEntity;
+import com.example.demo.bean.BankEntity;
 import com.example.demo.bean.ResultBean;
 import com.example.demo.dao.AccountDao;
 import com.example.demo.dao.BankDao;
 import com.example.demo.dao.UserDao;
 import com.example.demo.response.AccountResponse;
-import com.example.demo.response.BankResponse;
-import com.example.demo.response.UserResponse;
 import com.example.demo.service.AccountService;
 import com.example.demo.utils.ApiValidateException;
+import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
 import com.example.demo.utils.Regex;
 import com.google.gson.Gson;
@@ -62,36 +62,26 @@ public class AccountServiceImpl implements AccountService {
         LOGGER.info("------addAccount START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
-        // kiem tra user ID duoc nhap dung chua
-        String userIdString = jObject.get("user_id").getAsString();
-        if (!userIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "User ID" }));
-        }
+        Integer userId = userDao.getUserById(Integer.parseInt(DataUtils.getUserIdByToken())).getUserId();
 
-        // kiem tra bank ID duoc nhap dung chua
+        // kiem tra bank ID validate chua?
         String bankIdString = jObject.get("bank_id").getAsString();
         if (!bankIdString.matches(Regex.ID_PATTERN)) {
             throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "Bank ID" }));
         }
 
-        Integer userId = jObject.get("user_id").getAsInt();
         Integer bankId = jObject.get("bank_id").getAsInt();
-        AccountEntity accountEntity = accountDao.getAccountEntity(userId, bankId);
-        // check xem trong db bang account co userId dung bankId nao chua
-        if (!Objects.isNull(accountEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR03", new Object[] { "Account" }));
-        }
 
-        UserResponse userEntity = userDao.getUserById(userId);
-        // check xem trong db bang user co userId duoc nhap chua
-        if (Objects.isNull(userEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR02", new Object[] { "User" }));
-        }
-
-        BankResponse bankEntity = bankDao.getBankById(bankId);
+        BankEntity bankEntity = bankDao.getBankEntityById(bankId);
         // check xem trong db bang bank co bankId duoc nhap chua
         if (Objects.isNull(bankEntity)) {
             throw new ApiValidateException("400", MessageUtils.getMessage("ERR02", new Object[] { "Bank" }));
+        }
+
+        AccountEntity accountEntity = accountDao.getAccountEntity(userId, bankId);
+        // check xem trong db bang account co account nao chua
+        if (!Objects.isNull(accountEntity)) {
+            throw new ApiValidateException("400", MessageUtils.getMessage("ERR03", new Object[] { "Account" }));
         }
 
         // kiem tra so du tai khoan duoc nhap dung chua

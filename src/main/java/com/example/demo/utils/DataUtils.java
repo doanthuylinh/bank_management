@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.google.gson.JsonObject;
+
 /**
  * [OVERVIEW] XXXXX.
  *
@@ -30,9 +32,32 @@ public class DataUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUserName = authentication.getName();
-            System.out.println(currentUserName);
             return currentUserName;
         }
         return null;
+    }
+    
+    public static Integer getAsIntegerByJson(JsonObject object, String member) throws ApiValidateException{
+        try {
+            return object.get(member).getAsInt();
+        } catch (Exception e) {
+            throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
+        }
+    }
+    
+    public static String getAsStringByJson(JsonObject object, String member) throws ApiValidateException{
+        try {
+            return object.get(member).getAsString();
+        } catch (Exception e) {
+            throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
+        }
+    }
+    
+    public static Double getAsDoubleByJson(JsonObject object, String member) throws ApiValidateException{
+        try {
+            return object.get(member).getAsDouble();
+        } catch (Exception e) {
+            throw new ApiValidateException("ERR", "JSON " + member + " is invalid.");
+        }
     }
 }

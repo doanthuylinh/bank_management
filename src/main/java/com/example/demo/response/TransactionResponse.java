@@ -8,10 +8,12 @@ package com.example.demo.response;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * [OVERVIEW] Transaction Response.
+ * [OVERVIEW] Transaction Response used for deposit (type 0) and withdrawal (type 1) money.
  *
  * @author: (VNEXT)LinhDT
  * @version: 1.0
@@ -24,6 +26,9 @@ public class TransactionResponse {
 
     @JsonProperty("transaction_id")
     private Integer transactionId;
+
+    @Column(name = "account_id")
+    private Integer accountId;
 
     @JsonProperty("user_id")
     private Integer userId;
@@ -46,12 +51,38 @@ public class TransactionResponse {
     @JsonProperty("transaction_type")
     private String transactionType;
 
+    @JsonProperty("from_user_id")
+    private Integer fromUserId;
+
+    @JsonProperty("to_user_id")
+    private Integer toUserId;
+
+    @JsonProperty("bank_id_target")
+    private Integer bankIdTarget;
+
+    @JsonProperty("from_user_name")
+    private String fromUserName;
+
+    @JsonProperty("to_user_name")
+    private String toUserName;
+
+    @JsonProperty("bank_target_name")
+    private String bankTargetName;
+
     public Integer getTransactionId() {
         return transactionId;
     }
 
     public void setTransactionId(Integer transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
     }
 
     public Integer getUserId() {
@@ -110,10 +141,59 @@ public class TransactionResponse {
         this.transactionType = transactionType;
     }
 
-    public TransactionResponse(Integer transactionId, Integer userId, String userName, Integer bankId, String bankName, Double transactionMoney,
-            Date transactionDate, String transactionType) {
+    public Integer getFromUserId() {
+        return fromUserId;
+    }
+
+    public void setFromUserId(Integer fromUserId) {
+        this.fromUserId = fromUserId;
+    }
+
+    public Integer getToUserId() {
+        return toUserId;
+    }
+
+    public void setToUserId(Integer toUserId) {
+        this.toUserId = toUserId;
+    }
+
+    public Integer getBankIdTarget() {
+        return bankIdTarget;
+    }
+
+    public void setBankIdTarget(Integer bankIdTarget) {
+        this.bankIdTarget = bankIdTarget;
+    }
+
+    public String getFromUserName() {
+        return fromUserName;
+    }
+
+    public void setFromUserName(String fromUserName) {
+        this.fromUserName = fromUserName;
+    }
+
+    public String getToUserName() {
+        return toUserName;
+    }
+
+    public void setToUserName(String toUserName) {
+        this.toUserName = toUserName;
+    }
+
+    public String getBankTargetName() {
+        return bankTargetName;
+    }
+
+    public void setBankTargetName(String bankTargetName) {
+        this.bankTargetName = bankTargetName;
+    }
+
+    public TransactionResponse(Integer transactionId, Integer accountId, Integer userId, String userName, Integer bankId, String bankName,
+            Double transactionMoney, Date transactionDate, String transactionType) {
         super();
         this.transactionId = transactionId;
+        this.accountId = accountId;
         this.userId = userId;
         this.userName = userName;
         this.bankId = bankId;
@@ -121,6 +201,27 @@ public class TransactionResponse {
         this.transactionMoney = transactionMoney;
         this.transactionDate = transactionDate;
         this.transactionType = transactionType;
+    }
+
+    public TransactionResponse(Integer transactionId, Integer accountId, Integer userId, String userName, Integer bankId, String bankName,
+            Double transactionMoney, Date transactionDate, String transactionType, Integer fromUserId, Integer toUserId, Integer bankIdTarget,
+            String fromUserName, String toUserName, String bankTargetName) {
+        super();
+        this.transactionId = transactionId;
+        this.accountId = accountId;
+        this.userId = userId;
+        this.userName = userName;
+        this.bankId = bankId;
+        this.bankName = bankName;
+        this.transactionMoney = transactionMoney;
+        this.transactionDate = transactionDate;
+        this.transactionType = transactionType;
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.bankIdTarget = bankIdTarget;
+        this.fromUserName = fromUserName;
+        this.toUserName = toUserName;
+        this.bankTargetName = bankTargetName;
     }
 
 }

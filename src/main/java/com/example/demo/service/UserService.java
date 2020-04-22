@@ -38,7 +38,6 @@ public interface UserService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param id
      * @return
      */
     public ResultBean getUserById();

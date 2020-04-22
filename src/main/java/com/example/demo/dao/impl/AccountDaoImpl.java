@@ -100,6 +100,28 @@ public class AccountDaoImpl implements AccountDao {
      * @return
      */
     @Override
+    public AccountEntity getAccountEntity(Integer accountId) {
+        LOGGER.info("------getAccountEntity START--------------");
+        StringBuilder sql = new StringBuilder();
+        sql.append(" FROM ");
+        sql.append("    AccountEntity ae ");
+        sql.append(" WHERE ");
+        sql.append("    ae.accountId = :accountId ");
+
+        Query query = this.entityManager.createQuery(sql.toString());
+
+        query.setParameter("accountId", accountId);
+        AccountEntity entity = null;
+        try {
+            entity = (AccountEntity) query.getSingleResult();
+        } catch (NoResultException e) {
+
+        }
+        LOGGER.info("------getAccountEntity END--------------");
+        return entity;
+    }
+
+    @Override
     public AccountEntity getAccountEntity(Integer userId, Integer bankId) {
         LOGGER.info("------getAccountEntity START--------------");
         StringBuilder sql = new StringBuilder();

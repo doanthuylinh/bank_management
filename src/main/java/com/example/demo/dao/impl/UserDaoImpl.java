@@ -147,34 +147,4 @@ public class UserDaoImpl implements UserDao {
         return entity;
     }
 
-    /**
-     * @author: (VNEXT)LinhDT
-     * @param userId
-     * @param pass
-     * @return
-     */
-    @Override
-    public UserEntity getUserLogin(Integer userId, String pass) {
-        LOGGER.info("------getUserLogin START--------------");
-        StringBuilder sql = new StringBuilder();
-        sql.append(" FROM ");
-        sql.append("    UserEntity ue ");
-        sql.append(" WHERE ");
-        sql.append("    ue.userId = :userId ");
-        sql.append(" AND ");
-        sql.append("    ue.pass = :pass ");
-
-        Query query = this.entityManager.createQuery(sql.toString());
-        query.setParameter("userId", userId);
-        query.setParameter("pass", pass);
-        UserEntity entity = null;
-        try {
-            entity = (UserEntity) query.getSingleResult();
-        } catch (NoResultException e) {
-
-        }
-        LOGGER.info("------getUserLogin END--------------");
-        return entity;
-    }
-
 }

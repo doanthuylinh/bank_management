@@ -54,12 +54,4 @@ public interface UserDao {
      */
     public UserEntity getUserByPhone(String phone);
 
-    /**
-     * @author: (VNEXT)LinhDT
-     * @param userId
-     * @param pass
-     * @return
-     */
-    public UserEntity getUserLogin(Integer userId, String pass);
-
 }

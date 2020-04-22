@@ -44,6 +44,13 @@ public interface BankDao {
 
     /**
      * @author: (VNEXT)LinhDT
+     * @param id
+     * @return
+     */
+    public BankEntity getBankEntityById(Integer id);
+
+    /**
+     * @author: (VNEXT)LinhDT
      * @param userId
      * @return
      */

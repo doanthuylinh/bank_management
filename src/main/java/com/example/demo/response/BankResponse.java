@@ -20,12 +20,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 */
 public class BankResponse {
 
+    @JsonProperty("account_id")
+    private Integer accountId;
     @JsonProperty("bank_id")
     private Integer bankId;
     @JsonProperty("bank_name")
     private String bankName;
     @JsonProperty("balance")
     private Double balance;
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
 
     public Integer getBankId() {
         return bankId;
@@ -51,17 +61,12 @@ public class BankResponse {
         this.balance = balance;
     }
 
-    public BankResponse(Integer bankId, String bankName, Double balance) {
+    public BankResponse(Integer accountId, Integer bankId, String bankName, Double balance) {
         super();
+        this.accountId = accountId;
         this.bankId = bankId;
         this.bankName = bankName;
         this.balance = balance;
-    }
-
-    public BankResponse(Integer bankId, String bankName) {
-        super();
-        this.bankId = bankId;
-        this.bankName = bankName;
     }
 
 }

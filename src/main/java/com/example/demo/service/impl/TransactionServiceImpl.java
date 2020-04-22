@@ -25,9 +25,9 @@ import com.example.demo.dao.TransactionLevelDao;
 import com.example.demo.response.TransactionLevelResponse;
 import com.example.demo.service.TransactionService;
 import com.example.demo.utils.ApiValidateException;
+import com.example.demo.utils.ConstantColumn;
 import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
-import com.example.demo.utils.Regex;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -56,21 +56,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param json
-     * @throws ApiValidateException
-     */
-    @Override
-    public void addTransaction(String json) throws ApiValidateException {
-        LOGGER.info("------addTransaction START--------------");
-        JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
-        TransactionEntity entity = new TransactionEntity();
-        //AccountEntity accountEntity = null;
-        this.checkAccount(jObject, entity);
-        LOGGER.info("------addTransaction END--------------");
-    }
-
-    /**
-     * @author: (VNEXT)LinhDT
      * @param userId
      * @return
      */
@@ -84,7 +69,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param userId
      * @param bankId
      * @return
      */
@@ -103,35 +87,32 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      * @throws ApiValidateException
      */
-    private AccountEntity checkAccount(JsonObject jObject, TransactionEntity entity) throws ApiValidateException {
+    private AccountEntity checkAccount(JsonObject jObject, TransactionEntity entity, Boolean isTargetUser) throws ApiValidateException {
         LOGGER.info("------checkAccount START--------------");
-        // kiem tra user ID duoc nhap dung chua
-        String userIdString = jObject.get("user_id").getAsString();
-        if (!userIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "User ID" }));
+
+        Integer bankId = 0;
+        AccountEntity accountEntity = null;
+        if (!isTargetUser) {
+            bankId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.BANK_ID);
+            accountEntity = accountDao.getAccountEntity(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
+        } else {
+            bankId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.BANK_ID_TARGET);
+            Integer targetUserId = DataUtils.getAsIntegerByJson(jObject, ConstantColumn.TO_USER_ID);
+            accountEntity = accountDao.getAccountEntity(targetUserId, bankId);
         }
-        // kiem tra bank ID duoc nhap dung chua
-        String bankIdString = jObject.get("bank_id").getAsString();
-        if (!bankIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "Bank ID" }));
-        }
-        Integer userId = jObject.get("user_id").getAsInt();
-        Integer bankId = jObject.get("bank_id").getAsInt();
-        AccountEntity accountEntity = accountDao.getAccountEntity(userId, bankId);
+
         // check xem account co ton tai khong
         if (Objects.isNull(accountEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR02", new Object[] { "Account" }));
+            throw new ApiValidateException("ERR02", MessageUtils.getMessage("ERR02", new Object[] { "Account" }));
         }
 
         // kiem tra so tien giao dich duoc nhap dung chua
-        String moneyString = jObject.get("transaction_money").getAsString();
-        if (!moneyString.matches(Regex.MONEY_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "money" }));
-        }
+        Double money = DataUtils.getAsDoubleByJson(jObject, ConstantColumn.TRANSACTION_MONEY);
 
-        entity.setUserId(userId);
-        entity.setBankId(bankId);
-        entity.setTransactionMoney(jObject.get("transaction_money").getAsDouble());
+        entity.setAccountId(accountEntity.getAccountId());
+        entity.setUserId(accountEntity.getUserId());
+        entity.setBankId(accountEntity.getBankId());
+        entity.setTransactionMoney(money);
         entity.setTransactionDate(new Date());
 
         LOGGER.info("------checkAccount END--------------");
@@ -149,7 +130,7 @@ public class TransactionServiceImpl implements TransactionService {
         LOGGER.info("------deposit START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
         TransactionEntity entity = new TransactionEntity();
-        AccountEntity accountEntity = this.checkAccount(jObject, entity);
+        AccountEntity accountEntity = this.checkAccount(jObject, entity, false);
         Double balance = accountEntity.getBalance() + entity.getTransactionMoney();
         entity.setTransactionType("0");
         transactionDao.addTransaction(entity);
@@ -158,17 +139,15 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /**
+     * getBalance
      * @author: (VNEXT)LinhDT
-     * @param json
+     * @param entity
+     * @param accountEntity
+     * @return
      * @throws ApiValidateException
      */
-    @Override
-    public void withdraw(String json) throws ApiValidateException {
-        LOGGER.info("------withdraw START--------------");
-        JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
-        TransactionEntity entity = new TransactionEntity();
-        AccountEntity accountEntity = this.checkAccount(jObject, entity);
-        Integer bankId = jObject.get("bank_id").getAsInt();
+    private Double getBalance(TransactionEntity entity, AccountEntity accountEntity) throws ApiValidateException {
+        Integer bankId = accountEntity.getBankId();
         List<TransactionLevelResponse> lsTransactionLevelResponses = transactionLevelDao.getTransactionLevelEntityByBankId(bankId);
         Double balance = null;
         for (TransactionLevelResponse transactionLevelEntity : lsTransactionLevelResponses) {
@@ -185,9 +164,24 @@ public class TransactionServiceImpl implements TransactionService {
             }
         }
 
-        if (balance < 50000) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR04"));
+        if (Objects.isNull(balance) || balance < 50000) {
+            throw new ApiValidateException("ERR04", MessageUtils.getMessage("ERR04"));
         }
+        return balance;
+    }
+
+    /**
+     * @author: (VNEXT)LinhDT
+     * @param json
+     * @throws ApiValidateException
+     */
+    @Override
+    public void withdraw(String json) throws ApiValidateException {
+        LOGGER.info("------withdraw START--------------");
+        JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
+        TransactionEntity entity = new TransactionEntity();
+        AccountEntity accountEntity = this.checkAccount(jObject, entity, false);
+        Double balance = this.getBalance(entity, accountEntity);
         entity.setTransactionType("1");
         transactionDao.addTransaction(entity);
         accountEntity.setBalance(balance);
@@ -202,52 +196,29 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void transfer(String json) throws ApiValidateException {
         LOGGER.info("------transfer START--------------");
-
-        // withdraw
-        withdraw(json);
-
-        // deposit
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
+        TransactionEntity entityTarget = new TransactionEntity();
         TransactionEntity entity = new TransactionEntity();
 
-        // kiem tra user ID duoc nhap dung chua
-        String userTargetIdString = jObject.get("user_target_id").getAsString();
-        if (!userTargetIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "Target User ID" }));
-        }
-        // kiem tra bank ID duoc nhap dung chua
-        String bankTargetIdString = jObject.get("bank_target_id").getAsString();
-        if (!bankTargetIdString.matches(Regex.ID_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "Target Bank ID" }));
-        }
+        AccountEntity accountEntityTarget = this.checkAccount(jObject, entityTarget, true);
+        AccountEntity accountEntity = this.checkAccount(jObject, entity, false);
 
-        Integer userTargetId = jObject.get("user_target_id").getAsInt();
-        Integer bankTargetId = jObject.get("bank_target_id").getAsInt();
+        Double balance = this.getBalance(entity, accountEntity);
 
-        AccountEntity accountTargetEntity = accountDao.getAccountEntity(userTargetId, bankTargetId);
+        entity.setTransactionType("1");
+        entityTarget.setTransactionType("0");
 
-        // check xem account target co ton tai khong
-        if (Objects.isNull(accountTargetEntity)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR02", new Object[] { "Account" }));
-        }
+        entity.setBankIdTarget(entityTarget.getBankId());
+        entityTarget.setBankIdTarget(entity.getBankId());
 
-        // kiem tra so tien giao dich duoc nhap dung chua
-        String moneyString = jObject.get("transaction_money").getAsString();
-        if (!moneyString.matches(Regex.MONEY_PATTERN)) {
-            throw new ApiValidateException("400", MessageUtils.getMessage("ERR09", new Object[] { "money" }));
-        }
+        entity.setToUserId(accountEntityTarget.getUserId());
+        entityTarget.setFromUserId(entity.getUserId());
 
-        // add giao dich
-        entity.setUserId(userTargetId);
-        entity.setBankId(bankTargetId);
-        entity.setTransactionMoney(jObject.get("transaction_money").getAsDouble());
-        entity.setTransactionDate(new Date());
-
-        Double balance = accountTargetEntity.getBalance() + entity.getTransactionMoney();
-        entity.setTransactionType("0");
         transactionDao.addTransaction(entity);
-        accountTargetEntity.setBalance(balance);
+        transactionDao.addTransaction(entityTarget);
 
+        accountEntity.setBalance(balance);
+        accountEntityTarget.setBalance(accountEntityTarget.getBalance() + entityTarget.getTransactionMoney());
         LOGGER.info("------transfer END--------------");
     }
 

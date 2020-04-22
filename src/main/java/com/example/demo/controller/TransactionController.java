@@ -41,21 +41,6 @@ public class TransactionController {
 
     private static final Logger LOGGER = LogManager.getLogger(TransactionController.class);
 
-    @RequestMapping(value = "/transaction", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<ResultBean> addTransaction(@RequestBody String entity) {
-        LOGGER.info("------addTransaction START--------------");
-        try {
-            transactionService.addTransaction(entity);
-        } catch (ApiValidateException e) {
-            return new ResponseEntity<ResultBean>(new ResultBean(e.getCode(), e.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
-        }
-        LOGGER.info("------addTransaction END--------------");
-        return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transaction" })), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/transaction/list", method = RequestMethod.GET)
     public ResponseEntity<ResultBean> getListTransaction() {
         LOGGER.info("------getListTransaction START--------------");

@@ -20,12 +20,6 @@ import com.example.demo.utils.ApiValidateException;
  * 001       1.0       2020/04/15      (VNEXT)LinhDT      Create new
 */
 public interface TransactionService {
-    /**
-     * @author: (VNEXT)LinhDT
-     * @param entity
-     * @throws ApiValidateException
-     */
-    public void addTransaction(String entity) throws ApiValidateException;
 
     /**
      * @author: (VNEXT)LinhDT
