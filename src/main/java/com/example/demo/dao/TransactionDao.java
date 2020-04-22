@@ -9,6 +9,7 @@ package com.example.demo.dao;
 import java.util.List;
 
 import com.example.demo.bean.TransactionEntity;
+import com.example.demo.response.TransactionResponse;
 
 /**
  * [OVERVIEW] Transaction Dao.
@@ -42,4 +43,13 @@ public interface TransactionDao {
      * @return
      */
     public List<TransactionEntity> getTransaction(Integer userId, Integer bankId);
+
+    /**
+     * getTransactionResponse
+     * @author: (VNEXT)LinhDT
+     * @param userId
+     * @param bankId
+     * @return
+     */
+    public List<TransactionResponse> getTransactionResponse(Integer userId, Integer bankId);
 }

@@ -114,4 +114,19 @@ public class TransactionController {
         return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "transactions" })), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/transaction/csv/{bankId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<ResultBean> outputTransactionsToCSV(@PathVariable Integer bankId) {
+        LOGGER.info("------outputTransactionsToCSV START--------------");
+        try {
+            transactionService.outputTransactionsToCSV(bankId);
+        } catch (ApiValidateException e) {
+            return new ResponseEntity<ResultBean>(new ResultBean(e.getCode(), e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
+        }
+        LOGGER.info("------outputTransactionsToCSV END--------------");
+        return new ResponseEntity<ResultBean>(new ResultBean("200", MessageUtils.getMessage("MSG05", new Object[] { "Export CSV file" })), HttpStatus.OK);
+    }
+
 }

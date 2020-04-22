@@ -55,4 +55,12 @@ public interface TransactionService {
      * @throws ApiValidateException
      */
     public void transfer(String entity) throws ApiValidateException;
+
+    /**
+     * outputTransactionsToCSV
+     * @author: (VNEXT)LinhDT
+     * @param id
+     * @return
+     */
+    public String outputTransactionsToCSV(Integer id) throws ApiValidateException;
 }

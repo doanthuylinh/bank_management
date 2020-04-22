@@ -6,10 +6,15 @@
 
 package com.example.demo.service.impl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +28,13 @@ import com.example.demo.dao.AccountDao;
 import com.example.demo.dao.TransactionDao;
 import com.example.demo.dao.TransactionLevelDao;
 import com.example.demo.response.TransactionLevelResponse;
+import com.example.demo.response.TransactionResponse;
 import com.example.demo.service.TransactionService;
 import com.example.demo.utils.ApiValidateException;
 import com.example.demo.utils.ConstantColumn;
 import com.example.demo.utils.DataUtils;
 import com.example.demo.utils.MessageUtils;
+import com.example.demo.utils.RenameFile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -147,6 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @throws ApiValidateException
      */
     private Double getBalance(TransactionEntity entity, AccountEntity accountEntity) throws ApiValidateException {
+        LOGGER.info("------getBalance START--------------");
         Integer bankId = accountEntity.getBankId();
         List<TransactionLevelResponse> lsTransactionLevelResponses = transactionLevelDao.getTransactionLevelEntityByBankId(bankId);
         Double balance = null;
@@ -167,6 +175,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (Objects.isNull(balance) || balance < 50000) {
             throw new ApiValidateException("ERR04", MessageUtils.getMessage("ERR04"));
         }
+        LOGGER.info("------getBalance END--------------");
         return balance;
     }
 
@@ -220,6 +229,35 @@ public class TransactionServiceImpl implements TransactionService {
         accountEntity.setBalance(balance);
         accountEntityTarget.setBalance(accountEntityTarget.getBalance() + entityTarget.getTransactionMoney());
         LOGGER.info("------transfer END--------------");
+    }
+
+    /**
+     * outputTransactionsToCSV
+     * @author: (VNEXT)LinhDT
+     * @param id
+     * @return
+     */
+    @Override
+    public String outputTransactionsToCSV(Integer bankId) throws ApiValidateException {
+        List<TransactionResponse> entity = transactionDao.getTransactionResponse(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
+        String fileName = RenameFile.renameFile();
+        String csvFile = "D:/CSV/output/transaction_output" + fileName + ".csv";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
+                CSVPrinter csvPrinter = new CSVPrinter(writer,
+                        CSVFormat.DEFAULT.withHeader("TransactionID", "AccountID", "UserID", "UserName", "BankID", "BankName", "MoneyTransaction", "Date",
+                                "Type", "FromUserID", "ToUserID", "BankIDTarget", "FromUserName", "ToUserName", "BankTargetName"));) {
+            for (TransactionResponse transactionResponse : entity) {
+                csvPrinter.printRecord(transactionResponse.getTransactionId(), transactionResponse.getAccountId(), transactionResponse.getUserId(),
+                        transactionResponse.getUserName(), transactionResponse.getBankId(), transactionResponse.getBankName(),
+                        transactionResponse.getTransactionMoney(), transactionResponse.getTransactionDate(), transactionResponse.getTransactionType(),
+                        transactionResponse.getFromUserId(), transactionResponse.getToUserId(), transactionResponse.getBankIdTarget(),
+                        transactionResponse.getFromUserName(), transactionResponse.getToUserName(), transactionResponse.getBankTargetName());
+            }
+            csvPrinter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return csvFile;
     }
 
 }
