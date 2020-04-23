@@ -31,6 +31,7 @@ public class ConstantColumn {
     public final static String PASS = "pass";
 
     public final static String CONFIRMED_PASS = "confirmed_pass";
+    public final static String CURRENT_PASS = "current_pass";
 
     public final static String BALANCE = "balance";
 }

@@ -247,12 +247,22 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userEntity = userDao.getUserEntity(Integer.parseInt(DataUtils.getUserIdByToken()));
 
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.CURRENT_PASS)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.CURRENT_PASS }));
+        }
+
         if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.PASS)) {
             throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.PASS }));
         }
 
         if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.CONFIRMED_PASS)) {
             throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.CONFIRMED_PASS }));
+        }
+
+        // kiem tra xem current_pass co giong pass cu khong?
+        String currentPass = DataUtils.getAsStringByJson(jObject, ConstantColumn.CURRENT_PASS);
+        if (!webSecurityConfig.passwordEncoder().matches(currentPass, userEntity.getPass())) {
+            throw new ApiValidateException("ERR15", MessageUtils.getMessage("ERR15", new Object[] { "password." }));
         }
 
         String pass = DataUtils.getAsStringByJson(jObject, ConstantColumn.PASS);
@@ -262,10 +272,15 @@ public class UserServiceImpl implements UserService {
 
         String confirmedPass = DataUtils.getAsStringByJson(jObject, ConstantColumn.CONFIRMED_PASS);
 
+        // kiem tra xem pass co giong pass confirmed khong?
         if (!pass.equals(confirmedPass)) {
             throw new ApiValidateException("ERR13", MessageUtils.getMessage("ERR13"));
         }
 
+        // kiem tra xem pass moi doi co giong pass cu khong?
+        if (webSecurityConfig.passwordEncoder().matches(pass, userEntity.getPass())) {
+            throw new ApiValidateException("ERR14", MessageUtils.getMessage("ERR14"));
+        }
         userEntity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
         userDao.updateUser(userEntity);
 
