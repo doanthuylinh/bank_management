@@ -80,25 +80,39 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("------addUser START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.PHONE)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.PHONE }));
+        }
         // get phone duoc nhap vao va kiem tra
         String phone = DataUtils.getAsStringByJson(jObject, ConstantColumn.PHONE);
-        if (Objects.isNull(phone) || !phone.matches(Regex.PHONE_PATTERN)) {
+        if (!phone.matches(Regex.PHONE_PATTERN)) {
             throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
 
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.USER_NAME)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.USER_NAME }));
+        }
         // get userName duoc nhap vao va kiem tra
         String userName = DataUtils.getAsStringByJson(jObject, ConstantColumn.USER_NAME);
-        if (Objects.isNull(userName) || !userName.matches(Regex.NAME_PATTERN)) {
+        if (!userName.matches(Regex.NAME_PATTERN)) {
             throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
+        }
+
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.DOB)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.DOB }));
         }
         // get ngay sinh duoc nhap vao va kiem tra
         String dob = DataUtils.getAsStringByJson(jObject, ConstantColumn.DOB);
-        if (Objects.isNull(dob) || !dob.matches(Regex.DATE_PATTERN)) {
+        if (!dob.matches(Regex.DATE_PATTERN)) {
             throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
+        }
+
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.PASS)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.PASS }));
         }
         // get password duoc nhap vao va kiem tra
         String pass = DataUtils.getAsStringByJson(jObject, ConstantColumn.PASS);
-        if (Objects.isNull(pass) || !pass.matches(Regex.PASSWORD_PATTERN)) {
+        if (!pass.matches(Regex.PASSWORD_PATTERN)) {
             throw new ApiValidateException("ERR08", MessageUtils.getMessage("ERR08"));
         }
         // get user by phone
@@ -131,17 +145,28 @@ public class UserServiceImpl implements UserService {
 
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
-        String userName = DataUtils.getAsStringByJson(jObject, "user_name");
-        if (Objects.isNull(userName) || !userName.matches(Regex.NAME_PATTERN)) {
+        // kiem tra user_name co null khong?
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.USER_NAME)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.USER_NAME }));
+        }
+        // get user_name vao va kiem tra pattern roi set
+        String userName = DataUtils.getAsStringByJson(jObject, ConstantColumn.USER_NAME);
+        if (!userName.matches(Regex.NAME_PATTERN)) {
             throw new ApiValidateException("ERR07", MessageUtils.getMessage("ERR07"));
         }
         entity.setUserName(userName);
 
-        String phone = DataUtils.getAsStringByJson(jObject, "phone");
-        if (Objects.isNull(phone) || !phone.matches(Regex.PHONE_PATTERN)) {
+        // kiem tra phone co null khong?
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.PHONE)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.PHONE }));
+        }
+        // get phone vao va kiem tra pattern roi set
+        String phone = DataUtils.getAsStringByJson(jObject, ConstantColumn.PHONE);
+        if (!phone.matches(Regex.PHONE_PATTERN)) {
             throw new ApiValidateException("ERR06", MessageUtils.getMessage("ERR06"));
         }
 
+        // kiem tra xem phone moi duoc nhap vao co giong phone cu cua user login khong? Neu khong thi moi kiem tra phone da ton tai chua.
         if (!entity.getPhone().equals(phone)) {
             UserEntity userEntity = userDao.getUserByPhone(phone);
             // check xem phone da co trong db hay chua, neu co roi thi throw message phone da ton tai
@@ -151,8 +176,13 @@ public class UserServiceImpl implements UserService {
             entity.setPhone(phone);
         }
 
-        String dob = DataUtils.getAsStringByJson(jObject, "dob");
-        if (Objects.isNull(dob) || !dob.matches(Regex.DATE_PATTERN)) {
+        // kiem tra dob co null khong?
+        if (DataUtils.isNullWithMemberNameByJson(jObject, ConstantColumn.DOB)) {
+            throw new ApiValidateException("ERR12", MessageUtils.getMessage("ERR12", new Object[] { ConstantColumn.DOB }));
+        }
+        // get dob vao va kiem tra pattern roi set
+        String dob = DataUtils.getAsStringByJson(jObject, ConstantColumn.DOB);
+        if (!dob.matches(Regex.DATE_PATTERN)) {
             throw new ApiValidateException("ERR09", MessageUtils.getMessage("ERR09", new Object[] { "date" }));
         }
         entity.setDob(dob);
