@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // Lấy jwt từ request
             String jwt = getJwtFromRequest(request);
-            if(Objects.isNull(jwt)) {
+            if (Objects.isNull(jwt)) {
                 SecurityContextHolder.clearContext();
             }
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {

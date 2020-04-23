@@ -6,8 +6,6 @@
 
 package com.example.demo.utils;
 
-import java.util.Objects;
-
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.google.gson.JsonObject;
 
 /**
- * [OVERVIEW] XXXXX.
+ * [OVERVIEW] Data Utils.
  *
  * @author: (VNEXT)LinhDT
  * @version: 1.0
@@ -40,12 +38,12 @@ public class DataUtils {
     }
 
     public static boolean isNullWithMemberNameByJson(JsonObject object, String member) throws ApiValidateException {
-        if(!object.has(member) || object.has(member) && (object.get(member).equals(null) ||  object.get(member).equals(""))) {
+        if (!object.has(member) || object.has(member) && (object.get(member).equals(null) || object.get(member).equals(""))) {
             return true;
         }
         return false;
     }
-    
+
     public static Integer getAsIntegerByJson(JsonObject object, String member) throws ApiValidateException {
         try {
             if (object.has(member)) {
@@ -70,7 +68,7 @@ public class DataUtils {
 
     public static Double getAsDoubleByJson(JsonObject object, String member) throws ApiValidateException {
         try {
-            if(object.has(member)) {
+            if (object.has(member)) {
                 return object.get(member).getAsDouble();
             }
         } catch (Exception e) {

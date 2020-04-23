@@ -174,14 +174,13 @@ public class TransactionServiceImpl implements TransactionService {
                 break;
             }
         }
-
         if (Objects.isNull(balance) || balance < 50000) {
             throw new ApiValidateException("ERR04", MessageUtils.getMessage("ERR04"));
         }
-        LOGGER.info("------getBalance END--------------");
         Map<String, Double> result = new HashMap<String, Double>();
         result.put("balance", balance);
         result.put("fee", fee);
+        LOGGER.info("------getBalance END--------------");
         return result;
     }
 

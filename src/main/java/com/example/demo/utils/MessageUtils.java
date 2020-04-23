@@ -23,9 +23,9 @@ import java.util.ResourceBundle;
 public class MessageUtils {
 
     /**
-     * @author (VNEXT)DuyHV
+     * getMessage
+     * @author: (VNEXT)LinhDT
      * @param key
-     * @param locate
      * @param param
      * @return
      */

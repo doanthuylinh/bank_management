@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     WebSecurityConfig webSecurityConfig;
+
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
     /**
@@ -204,6 +204,12 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    /**
+     * changePassword
+     * @author: (VNEXT)LinhDT
+     * @param pass
+     * @throws ApiValidateException
+     */
     @Override
     public void changePassword(String json) throws ApiValidateException {
         LOGGER.info("------changePassword START--------------");
@@ -229,7 +235,7 @@ public class UserServiceImpl implements UserService {
         if (!pass.equals(confirmedPass)) {
             throw new ApiValidateException("ERR13", MessageUtils.getMessage("ERR13"));
         }
-        
+
         userEntity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
         userDao.updateUser(userEntity);
 

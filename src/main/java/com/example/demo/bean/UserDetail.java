@@ -21,12 +21,13 @@ import org.springframework.security.core.userdetails.UserDetails;
  * --------------------------------------------------------------------------
  * 001       1.0       2020/04/19      (VNEXT)LinhDT       Create new
 */
-public class UserDetail implements UserDetails{
+public class UserDetail implements UserDetails {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
     UserEntity userEntity;
+
     public UserDetail(UserEntity userEntity) {
         super();
         this.userEntity = userEntity;
@@ -81,5 +82,5 @@ public class UserDetail implements UserDetails{
     public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
-    
+
 }

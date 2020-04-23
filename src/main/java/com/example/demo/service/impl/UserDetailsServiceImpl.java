@@ -24,7 +24,7 @@ import com.example.demo.dao.UserDao;
 import com.example.demo.utils.ApiValidateException;
 
 /**
- * [OVERVIEW] XXXXX.
+ * [OVERVIEW] User Details Service Implementation.
  *
  * @author: (VNEXT)LinhDT
  * @version: 1.0
