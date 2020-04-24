@@ -29,7 +29,6 @@ public interface TransactionService {
 
     /**
      * @author: (VNEXT)LinhDT
-     * @param userId
      * @param bankId
      * @return
      */
