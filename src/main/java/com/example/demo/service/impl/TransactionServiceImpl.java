@@ -73,7 +73,7 @@ public class TransactionServiceImpl implements TransactionService {
         LOGGER.info("------getListTransaction START--------------");
         List<TransactionEntity> entity = transactionDao.getTransactionByUserId(Integer.parseInt(DataUtils.getUserIdByToken()));
         LOGGER.info("------getListTransaction END--------------");
-        return new ResultBean(entity, "MSG01", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
+        return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
     }
 
     /**
@@ -86,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
         LOGGER.info("------getListTransaction START--------------");
         List<TransactionEntity> entity = transactionDao.getTransaction(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
         LOGGER.info("------getListTransaction END--------------");
-        return new ResultBean(entity, "MSG01", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
+        return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "transactions" }));
     }
 
     /**

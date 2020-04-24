@@ -129,6 +129,7 @@ public class UserServiceImpl implements UserService {
         entity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
         userDao.addUser(entity);
         LOGGER.info("------addUser END------------");
+        //return new ResultBean(entity, "201", MessageUtils.getMessage("MSG02", new Object[] { "user" }));
     }
 
     /**
@@ -203,7 +204,7 @@ public class UserServiceImpl implements UserService {
         List<BankResponse> listBank = bankDao.getListBankByUserId(entity.getUserId());
         entity.setBank(listBank);
         LOGGER.info("------getUserById END------------");
-        return new ResultBean(entity, "MSG01", MessageUtils.getMessage("MSG01", new Object[] { "user" }));
+        return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "user" }));
     }
 
     /**

@@ -38,7 +38,7 @@ public class DataUtils {
     }
 
     public static boolean isNullWithMemberNameByJson(JsonObject object, String member) throws ApiValidateException {
-        if (!object.has(member) || object.has(member) && (object.get(member).equals(null) || object.get(member).equals(""))) {
+        if (!object.has(member) || object.has(member) && (object.get(member).isJsonNull() || object.get(member).getAsString().equals(""))) {
             return true;
         }
         return false;

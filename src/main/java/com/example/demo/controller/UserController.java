@@ -46,6 +46,7 @@ public class UserController {
     @RequestMapping(value = "/user/registration", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addUser(@RequestBody String entity) {
         LOGGER.info("------addUser START--------------");
+        //ResultBean resultBean = null;
         try {
             userService.addUser(entity);
         } catch (ApiValidateException e) {
