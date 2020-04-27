@@ -72,11 +72,11 @@ public class AccountDaoImpl implements AccountDao {
         sql.append("    ae.balance ) ");
         sql.append(" FROM ");
         sql.append("    AccountEntity ae ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    BankEntity be ");
         sql.append(" ON ");
         sql.append("    ae.bankId = be.bankId ");
@@ -147,7 +147,6 @@ public class AccountDaoImpl implements AccountDao {
         return entity;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public AccountEntity getAccountEntityByUserAndAcc(Integer userId, Integer accountId) {
         LOGGER.info("------getAccountEntity START--------------");

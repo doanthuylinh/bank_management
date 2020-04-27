@@ -161,8 +161,8 @@ public class TransactionServiceImpl implements TransactionService {
         Double balance = null;
         Double fee = null;
         for (TransactionLevelResponse transactionLevelEntity : lsTransactionLevelResponses) {
-            if (transactionLevelEntity.getTransactionMin() <= entity.getTransactionMoney()
-                    && entity.getTransactionMoney() < transactionLevelEntity.getTransactionMax()) {
+            if (transactionLevelEntity.getTransactionMin().compareTo(entity.getTransactionMoney()) <= 0
+                    && entity.getTransactionMoney().compareTo(transactionLevelEntity.getTransactionMax()) < 0) {
                 // neu la type 0 thi tru them phi, neu khong phai type 0 thi lay muc phi nhan
                 // voi so tien giao dich
                 if (transactionLevelEntity.getTransactionLevelType().equals("0")) {
@@ -249,7 +249,7 @@ public class TransactionServiceImpl implements TransactionService {
     public String outputTransactionsToCSV(Integer bankId) throws ApiValidateException {
         List<TransactionResponse> entity = transactionDao.getTransactionResponse(Integer.parseInt(DataUtils.getUserIdByToken()), bankId);
         String fileName = RenameFile.renameFile();
-        String csvFile = "D:/CSV/output/transaction_output" + fileName + ".csv";
+        String csvFile = MessageUtils.getLink("OUTPUTCSV") + fileName + ".csv";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
                 CSVPrinter csvPrinter = new CSVPrinter(writer,
                         CSVFormat.DEFAULT.withHeader("TransactionID", "AccountID", "UserID", "UserName", "BankID", "BankName", "TransactionMoney",

@@ -106,14 +106,18 @@ public class BankDaoImpl implements BankDao {
     public List<BankResponse> getListBankByUserId(Integer userId) {
         LOGGER.info("------getListBankByUserId START--------------");
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT new com.example.demo.response.BankResponse(ae.accountId, be.bankId, be.bankName, ae.balance)");
+        sql.append(" SELECT new com.example.demo.response.BankResponse ( ");
+        sql.append("    (=ae.accountId, ");
+        sql.append("    be.bankId, ");
+        sql.append("    be.bankName, ");
+        sql.append("    ae.balance) ");
         sql.append(" FROM ");
         sql.append("    BankEntity be ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
         sql.append("    be.bankId = ae.bankId ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ue.userId = ae.userId ");

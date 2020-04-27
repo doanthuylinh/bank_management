@@ -40,6 +40,12 @@ public class AccountController {
 
     private static final Logger LOGGER = LogManager.getLogger(AccountController.class);
 
+    /**
+     * addAccount
+     * @author: (VNEXT)LinhDT
+     * @param entity
+     * @return
+     */
     @RequestMapping(value = "/account", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addAccount(@RequestBody String entity) {
         LOGGER.info("------addAccount START--------------");
@@ -55,6 +61,12 @@ public class AccountController {
         return new ResponseEntity<ResultBean>(new ResultBean("201", "Insert successfully"), HttpStatus.OK);
     }
 
+    /**
+     * getAccount
+     * @author: (VNEXT)LinhDT
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
     public ResponseEntity<ResultBean> getAccount(@PathVariable Integer id) {
         LOGGER.info("------getAccount START--------------");

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.WebSecurityConfig;
 import com.example.demo.bean.ResultBean;
 import com.example.demo.bean.UserDetail;
 import com.example.demo.bean.UserEntity;
+import com.example.demo.config.WebSecurityConfig;
 import com.example.demo.dao.BankDao;
 import com.example.demo.dao.UserDao;
 import com.example.demo.jwt.JwtTokenProvider;
@@ -71,12 +72,14 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
     /**
+     * addUser
      * @author: (VNEXT)LinhDT
      * @param entity
+     * @return
      * @throws ApiValidateException
      */
     @Override
-    public void addUser(String json) throws ApiValidateException {
+    public ResultBean addUser(String json) throws ApiValidateException {
         LOGGER.info("------addUser START--------------");
         JsonObject jObject = new Gson().fromJson(json, JsonObject.class);
 
@@ -128,8 +131,12 @@ public class UserServiceImpl implements UserService {
         entity.setDob(dob);
         entity.setPass(webSecurityConfig.passwordEncoder().encode(pass));
         userDao.addUser(entity);
+
+        UserEntity result = SerializationUtils.clone(entity);
+        result.setPass(null);
+
         LOGGER.info("------addUser END------------");
-        //return new ResultBean(entity, "201", MessageUtils.getMessage("MSG02", new Object[] { "user" }));
+        return new ResultBean(result, "201", MessageUtils.getMessage("MSG02", new Object[] { "user" }));
     }
 
     /**

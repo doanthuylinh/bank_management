@@ -52,4 +52,27 @@ public class MessageUtils {
         return message;
     }
 
+    public static String getLink(String key, Object... param) {
+        ResourceBundle rsMessages;
+        // Load all message from link.properties
+        rsMessages = ResourceBundle.getBundle("link");
+
+        String message;
+        try {
+            // Get message from rsMessages
+            message = rsMessages.getString(key);
+            if (message.length() == 0) {
+                return key;
+            }
+            // Replace param
+            if (param != null && param.length > 0) {
+                message = MessageFormat.format(message, param);
+            }
+        } catch (MissingResourceException e) {
+            message = key;
+        }
+        // return content
+        return message;
+    }
+
 }

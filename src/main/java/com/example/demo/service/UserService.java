@@ -22,12 +22,15 @@ import com.example.demo.utils.ApiValidateException;
  * 001       1.0       2020/04/15      (VNEXT)LinhDT      Create new
 */
 public interface UserService {
+
     /**
+     * addUser
      * @author: (VNEXT)LinhDT
      * @param entity
+     * @return
      * @throws ApiValidateException
      */
-    public void addUser(String entity) throws ApiValidateException;
+    public ResultBean addUser(String entity) throws ApiValidateException;
 
     /**
      * @author: (VNEXT)LinhDT

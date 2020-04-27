@@ -79,11 +79,11 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    be1.bankName ) ");
         sql.append(" FROM ");
         sql.append("    TransactionEntity te ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    BankEntity be ");
         sql.append(" ON ");
         sql.append("    te.bankId = be.bankId ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
         sql.append("    (te.accountId = ae.accountId ");
@@ -91,7 +91,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.userId = ae.userId ");
         sql.append(" AND ");
         sql.append("    te.bankId = ae.bankId) ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");
@@ -147,11 +147,11 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    be1.bankName ) ");
         sql.append(" FROM ");
         sql.append("    TransactionEntity te ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    BankEntity be ");
         sql.append(" ON ");
         sql.append("    te.bankId = be.bankId ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
         sql.append("    (te.accountId = ae.accountId ");
@@ -159,7 +159,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.userId = ae.userId ");
         sql.append(" AND ");
         sql.append("    te.bankId = ae.bankId) ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");
@@ -219,11 +219,11 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    be1.bankName ) ");
         sql.append(" FROM ");
         sql.append("    TransactionEntity te ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    BankEntity be ");
         sql.append(" ON ");
         sql.append("    te.bankId = be.bankId ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    AccountEntity ae ");
         sql.append(" ON ");
         sql.append("    (te.accountId = ae.accountId ");
@@ -231,7 +231,7 @@ public class TransactionDaoImpl implements TransactionDao {
         sql.append("    te.userId = ae.userId ");
         sql.append(" AND ");
         sql.append("    te.bankId = ae.bankId) ");
-        sql.append(" JOIN ");
+        sql.append(" INNER JOIN ");
         sql.append("    UserEntity ue ");
         sql.append(" ON ");
         sql.append("    ae.userId = ue.userId ");

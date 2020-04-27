@@ -43,12 +43,18 @@ public class UserController {
 
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);
 
+    /**
+     * addUser
+     * @author: (VNEXT)LinhDT
+     * @param entity
+     * @return
+     */
     @RequestMapping(value = "/user/registration", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> addUser(@RequestBody String entity) {
         LOGGER.info("------addUser START--------------");
-        //ResultBean resultBean = null;
+        ResultBean resultBean = null;
         try {
-            userService.addUser(entity);
+            resultBean = userService.addUser(entity);
         } catch (ApiValidateException e) {
             return new ResponseEntity<ResultBean>(new ResultBean(e.getCode(), e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -56,9 +62,14 @@ public class UserController {
             return new ResponseEntity<ResultBean>(new ResultBean("500", "Internal server error"), HttpStatus.BAD_REQUEST);
         }
         LOGGER.info("------addUser END------------");
-        return new ResponseEntity<ResultBean>(new ResultBean("201", MessageUtils.getMessage("MSG02", new Object[] { "user" })), HttpStatus.OK);
+        return new ResponseEntity<ResultBean>(resultBean, HttpStatus.OK);
     }
 
+    /**
+     * getUser
+     * @author: (VNEXT)LinhDT
+     * @return
+     */
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public ResponseEntity<ResultBean> getUser() {
         LOGGER.info("------getUser START--------------");
@@ -73,6 +84,12 @@ public class UserController {
         return new ResponseEntity<ResultBean>(entity, HttpStatus.OK);
     }
 
+    /**
+     * updateUser
+     * @author: (VNEXT)LinhDT
+     * @param entity
+     * @return
+     */
     @RequestMapping(value = "/user", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> updateUser(@RequestBody String entity) {
         LOGGER.info("------updateUser START--------------");
@@ -89,6 +106,12 @@ public class UserController {
         return new ResponseEntity<ResultBean>(new ResultBean("200", MessageUtils.getMessage("MSG04")), HttpStatus.OK);
     }
 
+    /**
+     * login
+     * @author: (VNEXT)LinhDT
+     * @param entity
+     * @return
+     */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> login(@RequestBody String entity) {
         LOGGER.info("------login START--------------");
@@ -105,6 +128,12 @@ public class UserController {
         return new ResponseEntity<ResultBean>(new ResultBean(result, "200", MessageUtils.getMessage("MSG03")), HttpStatus.OK);
     }
 
+    /**
+     * changePassword
+     * @author: (VNEXT)LinhDT
+     * @param entity
+     * @return
+     */
     @RequestMapping(value = "/changepassword", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ResultBean> changePassword(@RequestBody String entity) {
         LOGGER.info("------changePassword START--------------");
