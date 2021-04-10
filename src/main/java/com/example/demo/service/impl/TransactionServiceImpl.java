@@ -144,6 +144,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDao.addTransaction(entity);
         accountEntity.setBalance(balance);
         LOGGER.info("------deposit END--------------");
+        
     }
 
     /**

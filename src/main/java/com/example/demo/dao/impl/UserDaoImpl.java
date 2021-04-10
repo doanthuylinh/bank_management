@@ -70,7 +70,7 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public UserResponse getUserById(Integer id) {
-        LOGGER.info("------getUserById START--------------");
+        LOGGER.info("------getUserById START--------------Test");
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.UserResponse(");
         sql.append("    ue.userId, ");
@@ -90,7 +90,8 @@ public class UserDaoImpl implements UserDao {
         } catch (NoResultException e) {
 
         }
-        LOGGER.info("------getUserById END--------------");
+        LOGGER.info("------getUserById END-------------- Test");
+        System.out.println("Enity::::::::::::"+entity.getPhone().toString());
         return entity;
     }
 

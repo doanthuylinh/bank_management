@@ -32,7 +32,10 @@ public class DataUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUserName = authentication.getName();
+            System.out.println("Curren name:"+ currentUserName);
+
             return currentUserName;
+            
         }
         return null;
     }

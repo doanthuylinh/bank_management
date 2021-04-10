@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,6 +40,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userService;
 
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();
@@ -58,7 +65,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(AUTH_WHITELIST);
+    }
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
+    
+		/*
+		 * .authorizeRequests().antMatchers(HttpMethod.POST,
+		 * "/api/user/registration").permitAll().antMatchers(HttpMethod.POST,
+		 * "/api/login").permitAll().antMatchers(HttpMethod.GET,"/swagger-ui.html").
+		 * permitAll().antMatchers(HttpMethod.GET,"/webjars/**").permitAll().antMatchers
+		 * (HttpMethod.GET,"/swagger-resources/**").permitAll().antMatchers(HttpMethod.
+		 * GET,"/v2/api-docs").permitAll() // Cho phép tất cả mọi người truy cập // vào
+		 * địa chỉ này
+		 */
         http.csrf().disable() // Ngăn chặn request từ một domain khác
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/registration").permitAll().antMatchers(HttpMethod.POST, "/api/login").permitAll() // Cho phép tất cả mọi người truy cập // vào địa chỉ này
                 .anyRequest().authenticated(); // Tất cả các request khác đều cần phải xác thực mới được truy cập

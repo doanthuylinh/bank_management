@@ -104,7 +104,9 @@ public class BankDaoImpl implements BankDao {
     @SuppressWarnings("unchecked")
     @Override
     public List<BankResponse> getListBankByUserId(Integer userId) {
-        LOGGER.info("------getListBankByUserId START--------------");
+        LOGGER.info("User ID:"+userId);
+
+        LOGGER.info("------getListBankByUserId START-------------- Test-1"); 
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT new com.example.demo.response.BankResponse ( ");
         sql.append("    (=ae.accountId, ");
@@ -131,7 +133,7 @@ public class BankDaoImpl implements BankDao {
 
         entity = query.getResultList();
 
-        LOGGER.info("------getListBankByUserId END--------------");
+        LOGGER.info("------getListBankByUserId END-------------- Test");
 
         return entity;
     }

@@ -24,6 +24,9 @@ import com.example.demo.service.UserService;
 import com.example.demo.utils.ApiValidateException;
 import com.example.demo.utils.MessageUtils;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
+
 /**
  * [OVERVIEW] User Controller.
  *
@@ -36,6 +39,8 @@ import com.example.demo.utils.MessageUtils;
 */
 @RestController
 @RequestMapping(value = "/api")
+@Api(tags = "Users Rest Controller")
+
 public class UserController {
 
     @Autowired
@@ -113,7 +118,9 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
+    
     public ResponseEntity<ResultBean> login(@RequestBody String entity) {
+
         LOGGER.info("------login START--------------");
         Map<String, String> result = null;
         try {

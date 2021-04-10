@@ -206,11 +206,16 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultBean getUserById() {
-        LOGGER.info("------getUserById START--------------");
+        LOGGER.info("------getUserById START--------------TEst 1");
         UserResponse entity = userDao.getUserById(Integer.parseInt(DataUtils.getUserIdByToken()));
+        
         List<BankResponse> listBank = bankDao.getListBankByUserId(entity.getUserId());
+		/*
+		 * List<BankResponse> listBank =
+		 * bankDao.getListBankByUserId(entity.getUserId());
+		 */
         entity.setBank(listBank);
-        LOGGER.info("------getUserById END------------");
+        LOGGER.info("------getUserById END------------ Test 1");
         return new ResultBean(entity, "200", MessageUtils.getMessage("MSG01", new Object[] { "user" }));
     }
 
